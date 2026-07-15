@@ -26,9 +26,9 @@ charts. The breakpoints are designed, not stretched.
    perceptually smooth transition, never a hard cutoff.
 4. **No manual theme switcher.** The theme simply follows the sun on the device's clock;
    there is no in-app control to change it. (The preview's "Preview the day" slider is a
-   preview-only affordance, not an app feature.) *Open question:* whether to keep a
-   single **Lock to night** comfort toggle for late nights, tucked in Settings — deferred
-   pending confirmation.
+   preview-only affordance, not an app feature.) The one exception is a single **Lock to
+   night** comfort toggle, tucked in **Settings**, that forces the calm night theme for
+   late nights (`computeTheme(..., { lockNight: true })`).
 
 ### Keyframe intent
 
@@ -51,23 +51,30 @@ day text is a warm near-black. `on-primary` is derived the same way.
 
 ## Typography
 
-Native, deliberately paired system faces — zero webfont-fallback risk, feels native on
-the target devices:
+Two bundled, open-licensed (SIL OFL) faces — identical on the Moto, the Windows web
+app, and anywhere else, and safe to commit to a public repo:
 
-- **Display** — `ui-rounded` (SF Pro Rounded): sun-time, greetings, headings, numbers.
-  Soft, calm, warm.
-- **Body / UI** — `-apple-system` / `SF Pro Text`.
-- **Data / time** — `ui-monospace` (SF Mono) with `tabular-nums` for timestamps and
-  aligned figures.
+- **Display** — **Fraunces**: greetings, the large sun-time, section titles. A warm,
+  characterful "old-style" serif with a calligraphic softness — elegant without hurting
+  legibility.
+- **Body / data** — **IBM Plex Sans**: everything read in volume — lists, tables,
+  journals — with tabular figures for aligned logs.
+- **Mono** — **IBM Plex Mono** for timestamps and dense numeric tokens.
 
-Type scale is fixed and adhered to; generous line height; headings use
-`text-wrap: balance`; uppercase labels carry letter-spacing. (The shipped RN app may
-adopt a chosen variable font; the system stack is the preview baseline.)
+Font families are defined once in `@lifelike/core` `tokens.ts`; the app loads the static
+weights via `expo-font` and the web build via `@font-face`. The type scale is fixed and
+adhered to; generous line height; uppercase labels carry letter-spacing.
+
+> **Why not Gabriola.** Gabriola is Windows-only (absent on the Moto and on the web), its
+> signature flourishes depend on OpenType stylistic sets that React Native / Android
+> won't reliably render, it's proprietary (can't live in a public repo), and it's a
+> display face ill-suited to dense logs at 3am. Fraunces gives the same elegance while
+> bundling cleanly everywhere.
 
 ## Motion
 
-Soft and purposeful. Theme changes from discrete events (mode toggle, "now" ticks) are
-**tweened** (~700ms, eased); scrubbing is direct. The sun/moon arcs across the header;
+Soft and purposeful. Theme changes between minute ticks (and when Lock to night flips)
+are **tweened** (~700ms, eased). The sun/moon arcs across the header;
 stars fade in as the glow token rises. **`prefers-reduced-motion` is respected** — no
 tweening, no ambient animation, theme set instantly.
 

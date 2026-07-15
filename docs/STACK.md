@@ -30,7 +30,12 @@ installable PWA). Layouts are **deliberately divergent**, not stretched:
   shortcuts, wide charts.
 
 The theme follows the sun on the device's clock automatically — there is **no in-app
-theme switcher**, and sunrise/sunset are auto-derived from location (no manual latitude).
+theme switcher** (bar a single Lock-to-night toggle in Settings), and sunrise/sunset are
+auto-derived from location (no manual latitude).
+
+**Primary devices:** a **Moto G Play (Android)** phone and a **Windows PC** (web app in
+the browser). So biometrics on phone means Android BiometricPrompt + Keystore (not
+iOS/Face ID), and the web build must run well in a desktop Windows browser.
 
 The **design system is shared** (tokens, type scale, sun logic, color interpolation as
 plain data/logic); **component implementations are per-shape**.
