@@ -13,18 +13,22 @@ charts. The breakpoints are designed, not stretched.
 
 ## Sun engine
 
-1. **Location** → real local **sunrise / sunset** (and by extension solar noon, day
-   length, golden/blue-hour bands). `suncalc` in the app; the preview ships a compact
-   solar calc driven by a latitude control (fixed date). Location is read from the device
-   or set manually.
+1. **Location → sunrise / sunset, automatically.** Real local sunrise/sunset (and by
+   extension solar noon, day length, golden/blue-hour bands) are **auto-derived from the
+   device's location** — no manual latitude entry. `suncalc` computes them exactly from
+   coordinates in the app; a weather/astro source can cross-check. The preview hardcodes
+   the user's current times (5:04 AM / 9:05 PM) since it has no location access.
 2. **Current sun altitude** is computed from clock time relative to the sun events.
 3. The palette is a **timeline of keyframe palettes** anchored to solar events
    (deep night → astronomical/nautical dawn → blue hour → sunrise → golden morning →
    day → golden evening → sunset → blue dusk → night). The live theme is the two nearest
    keyframes **interpolated in OKLab/OKLCH** by the current time — a continuous,
    perceptually smooth transition, never a hard cutoff.
-4. **Controls:** Auto (follows real local time), Manual (scrub), and **Lock to night**
-   for late nights. Manual override always wins.
+4. **No manual theme switcher.** The theme simply follows the sun on the device's clock;
+   there is no in-app control to change it. (The preview's "Preview the day" slider is a
+   preview-only affordance, not an app feature.) *Open question:* whether to keep a
+   single **Lock to night** comfort toggle for late nights, tucked in Settings — deferred
+   pending confirmation.
 
 ### Keyframe intent
 
@@ -69,8 +73,9 @@ tweening, no ambient animation, theme set instantly.
 
 ## The two shapes
 
-**Phone shell.** Sky header (greeting + arcing sun + phase), single-column cards, a
-bottom tab bar, and a **floating capture bar** docked above the tabs.
+**Phone shell.** A **capture bar locked to the top** (always reachable; content scrolls
+under it), the sky header below it (greeting + arcing sun + phase), single-column cards,
+and a bottom tab bar for navigation.
 
 **Web shell.** Left **sidebar** nav (with Medical & Substances shown **locked /
 phone-only**), a top **command bar** that doubles as capture and global search (`⌘K`),
@@ -79,9 +84,10 @@ phone-only notice).
 
 ## AI capture → review → commit
 
-A persistent capture surface everywhere. Utterance → parsed proposals → a **review
-sheet** listing each target section as a card, every field **editable** and
-**removable**, whole cards droppable. **Nothing is written until confirmed.** Substances
+A persistent capture surface **locked to the top** on both shapes (a pinned bar on
+phone, the command bar on web). Utterance → parsed proposals → a **review sheet** listing
+each target section as a card, every field **editable** and **removable**, whole cards
+droppable. **Nothing is written until confirmed.** Substances
 are framed **neutrally** — a logged use is a data point: no red, no warning iconography,
 no disapproval.
 

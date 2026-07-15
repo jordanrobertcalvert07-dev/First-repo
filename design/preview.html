@@ -1,4 +1,4 @@
-<title>Halcyon — design preview</title>
+<title>LifeLike — design preview</title>
 <style>
   :root{
     --sky-top:#07070d; --sky-bottom:#120f18;
@@ -26,16 +26,16 @@
   ::selection{background:color-mix(in oklab,var(--primary),transparent 60%)}
   a{color:inherit}
 
-  /* ---------- STUDIO CONTROL BAR ---------- */
+  /* ---------- STUDIO CONTROL BAR (preview only) ---------- */
   .studio{
     position:sticky;top:0;z-index:40;
     background:color-mix(in oklab,var(--studio),transparent 8%);
     backdrop-filter:blur(14px);
     border-bottom:1px solid var(--studio-line);
     color:var(--studio-text);
-    padding:12px clamp(14px,3vw,28px);
+    padding:11px clamp(14px,3vw,28px);
   }
-  .studio-row{display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;max-width:1240px;margin:0 auto}
+  .studio-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;max-width:1240px;margin:0 auto}
   .brandmark{display:flex;align-items:center;gap:10px;font-family:var(--ff-display);font-weight:600;letter-spacing:.2px}
   .brandmark .dot{width:22px;height:22px;border-radius:50%;
     background:radial-gradient(circle at 35% 35%,var(--sun),var(--primary) 70%);
@@ -44,10 +44,10 @@
   .ctl{display:flex;flex-direction:column;gap:5px;min-width:0}
   .ctl > label{font-size:10.5px;text-transform:uppercase;letter-spacing:.11em;color:var(--studio-dim);font-weight:600}
   .seg{display:inline-flex;background:#17171c;border:1px solid var(--studio-line);border-radius:999px;padding:3px}
-  .seg button{padding:5px 12px;border-radius:999px;font-size:12.5px;font-weight:550;color:var(--studio-dim);white-space:nowrap;transition:.18s}
+  .seg button{padding:5px 13px;border-radius:999px;font-size:12.5px;font-weight:550;color:var(--studio-dim);white-space:nowrap;transition:.18s}
   .seg button[aria-pressed="true"]{background:linear-gradient(180deg,var(--primary),color-mix(in oklab,var(--primary),#000 14%));color:var(--on-primary);box-shadow:0 1px 8px color-mix(in oklab,var(--primary),transparent 55%)}
   .seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .scrub{flex:1 1 260px;min-width:200px}
+  .scrub{flex:1 1 300px;min-width:220px}
   .scrub .rowline{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
   .scrub .now{font-family:var(--ff-mono);font-size:13px;color:var(--studio-text);font-variant-numeric:tabular-nums}
   .scrub .phase{font-size:11.5px;color:var(--primary);font-weight:600;letter-spacing:.02em}
@@ -61,44 +61,43 @@
   input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--primary);border:2px solid #fff}
   input[type=range]:focus-visible{outline:none}
   input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px color-mix(in oklab,var(--accent),transparent 55%)}
-  .lat{flex:0 1 190px}
-  .sunreadout{font-family:var(--ff-mono);font-size:11.5px;color:var(--studio-dim);white-space:nowrap;display:flex;gap:12px;align-items:center}
+  .sunreadout{font-family:var(--ff-mono);font-size:11.5px;color:var(--studio-dim);white-space:nowrap;display:flex;gap:14px;align-items:center}
   .sunreadout b{color:var(--studio-text);font-weight:600}
+  .preview-tag{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--studio-dim);border:1px solid var(--studio-line);border-radius:6px;padding:3px 7px;font-weight:600}
 
   /* ---------- STAGE / SHELL ---------- */
-  #stage{min-height:calc(100vh - 64px);display:flex;justify-content:center;transition:background-color .8s}
+  #stage{min-height:calc(100vh - 58px);display:flex;justify-content:center;transition:background-color .8s}
 
   /* device sky background */
   .sky-bg{position:absolute;inset:0;background:linear-gradient(178deg,var(--sky-top) 0%,var(--sky-bottom) 100%);z-index:0}
   .stars{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:calc(var(--glow));transition:opacity .8s}
-  .arc{position:absolute;left:0;right:0;top:0;height:200px;z-index:2;pointer-events:none;overflow:hidden}
-  .horizon{position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,color-mix(in oklab,var(--text),transparent 78%),transparent)}
+  .arc{position:absolute;left:0;right:0;top:0;height:230px;z-index:2;pointer-events:none;overflow:hidden}
   .celest{position:absolute;width:46px;height:46px;border-radius:50%;transform:translate(-50%,50%);
     background:radial-gradient(circle at 38% 36%,color-mix(in oklab,var(--sun),#fff 25%),var(--sun) 62%,color-mix(in oklab,var(--sun),var(--primary) 40%) 100%);
     box-shadow:0 0 46px calc(20px * var(--glow)) color-mix(in oklab,var(--sun),transparent 30%),
                0 0 120px calc(48px * var(--glow)) color-mix(in oklab,var(--primary),transparent 55%);
     transition:background .8s}
 
-  /* PHONE SHELL */
-  #stage.shape-phone{align-items:flex-start;padding:26px 16px 60px}
-  .shape-phone .device{position:relative;width:100%;max-width:404px;min-height:820px;border-radius:44px;overflow:hidden;
-    box-shadow:0 40px 90px -30px rgba(0,0,0,.75),0 0 0 10px #131317,0 0 0 11px #2a2a30;
-    isolation:isolate}
-  .shape-web .device{position:relative;width:100%;min-height:calc(100vh - 64px);overflow:hidden;isolation:isolate;display:flex}
-  .shape-web .appmain{flex:1;min-width:0}
+  /* PHONE SHELL — capture locked at top, content scrolls under it, tabs pinned at bottom */
+  #stage.shape-phone{align-items:flex-start;padding:22px 16px 40px}
+  .shape-phone .device{position:relative;width:100%;max-width:404px;height:calc(100dvh - 92px);min-height:560px;max-height:920px;
+    border-radius:44px;overflow:hidden;
+    box-shadow:0 40px 90px -30px rgba(0,0,0,.75),0 0 0 10px #131317,0 0 0 11px #2a2a30;isolation:isolate}
+  .shape-web .device{position:relative;width:100%;min-height:calc(100vh - 58px);overflow:hidden;isolation:isolate;display:flex}
   #stage.shape-web{align-items:stretch;padding:0}
 
-  .sidebar,.tabbar,.topbar,.capturedock{z-index:6}
-  .appmain{position:relative;z-index:4}
+  .appmain{position:relative;z-index:4;display:flex;flex-direction:column}
+  .shape-phone .appmain{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    padding-top:74px;padding-bottom:78px;scrollbar-width:none}
+  .shape-phone .appmain::-webkit-scrollbar{display:none}
+  .shape-web .appmain{flex:1;min-width:0}
 
-  /* content */
-  .appmain{display:flex;flex-direction:column;min-height:100%}
-  .sky{position:relative;padding:26px 22px 18px}
-  .shape-web .sky{padding:30px clamp(24px,3vw,48px) 20px}
+  .sky{position:relative;padding:20px 22px 16px}
+  .shape-web .sky{padding:26px clamp(24px,3vw,48px) 18px}
   .greet-eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--text-dim);font-weight:650;margin:0 0 8px}
   .greet{font-family:var(--ff-display);font-weight:600;font-size:clamp(28px,7vw,40px);line-height:1.05;margin:0;letter-spacing:-.01em;text-wrap:balance;color:var(--text)}
   .greet .accentword{color:var(--primary)}
-  .subline{margin:10px 0 0;color:var(--text-dim);font-size:14.5px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .subline{margin:9px 0 0;color:var(--text-dim);font-size:14.5px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .subline .tclock{font-family:var(--ff-mono);color:var(--text);font-variant-numeric:tabular-nums}
   .subline .sep{opacity:.4}
 
@@ -106,7 +105,7 @@
   .shape-web .content{padding:12px clamp(24px,3vw,48px) 40px;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);align-items:start;gap:20px}
   .shape-web .content .colmain{display:grid;gap:18px;grid-template-columns:1fr 1fr}
   .shape-web .content .colmain .span2{grid-column:1 / -1}
-  .shape-web .content .colrail{display:grid;gap:18px;position:sticky;top:78px}
+  .shape-web .content .colrail{display:grid;gap:18px;position:sticky;top:20px}
   .colmain{display:grid;gap:14px}
   .colrail{display:grid;gap:14px}
 
@@ -153,7 +152,7 @@
 
   /* rail bits */
   .streak{display:flex;gap:6px;margin-top:4px}
-  .streak .d{flex:1;height:34px;border-radius:7px;background:color-mix(in oklab,var(--text),transparent 88%);position:relative;overflow:hidden}
+  .streak .d{flex:1;height:34px;border-radius:7px;background:color-mix(in oklab,var(--text),transparent 88%);position:relative}
   .streak .d.on{background:linear-gradient(180deg,color-mix(in oklab,var(--primary),transparent 20%),var(--primary))}
   .streak .d small{position:absolute;bottom:-16px;left:0;right:0;text-align:center;font-size:9px;color:var(--text-dim)}
   .statline{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid color-mix(in oklab,var(--border),transparent 40%)}
@@ -170,9 +169,9 @@
   .locknote b{color:var(--text);font-weight:600;font-size:13px}
 
   /* ---------- NAV: phone tabs ---------- */
-  .tabbar{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-around;align-items:center;
-    padding:10px 8px calc(10px + env(safe-area-inset-bottom,6px));gap:2px;
-    background:color-mix(in oklab,var(--surface),transparent 12%);border-top:1px solid var(--border);
+  .tabbar{position:absolute;left:0;right:0;bottom:0;z-index:6;display:flex;justify-content:space-around;align-items:center;
+    padding:9px 8px calc(9px + env(safe-area-inset-bottom,4px));gap:2px;
+    background:color-mix(in oklab,var(--surface),transparent 10%);border-top:1px solid var(--border);
     backdrop-filter:blur(18px);transition:background-color .8s,border-color .8s}
   .tabbar button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 8px;border-radius:12px;color:var(--text-dim);flex:1}
   .tabbar button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7}
@@ -180,14 +179,13 @@
   .tabbar button[aria-current="true"]{color:var(--primary)}
   .shape-web .tabbar{display:none}
 
-  /* phone floating capture */
-  .capturedock{position:absolute;left:14px;right:14px;bottom:74px;bottom:calc(70px + env(safe-area-inset-bottom,6px));z-index:7}
+  /* phone capture — LOCKED AT TOP */
+  .capturedock{position:absolute;left:12px;right:12px;top:12px;z-index:9}
   .shape-web .capturedock{display:none}
-
   .capbar{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 16px;border-radius:999px;
-    background:color-mix(in oklab,var(--surface),transparent 4%);border:1px solid var(--border);
-    box-shadow:0 18px 40px -18px rgba(0,0,0,.65),0 0 0 1px color-mix(in oklab,var(--primary),transparent 88%);
-    backdrop-filter:blur(20px);transition:background-color .8s,border-color .8s}
+    background:color-mix(in oklab,var(--surface),transparent 2%);border:1px solid var(--border);
+    box-shadow:0 14px 34px -14px rgba(0,0,0,.6),0 0 0 1px color-mix(in oklab,var(--primary),transparent 88%);
+    backdrop-filter:blur(22px);transition:background-color .8s,border-color .8s}
   .capbar .spark{width:24px;height:24px;flex:0 0 auto;border-radius:50%;
     background:radial-gradient(circle at 36% 34%,var(--sun),var(--primary) 72%);box-shadow:0 0 12px color-mix(in oklab,var(--primary),transparent 45%)}
   .capbar input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--text);font-size:15px;padding:6px 0}
@@ -215,22 +213,21 @@
   .side-foot{margin-top:auto;padding:12px 10px 2px;font-size:11px;color:var(--text-dim);border-top:1px solid color-mix(in oklab,var(--border),transparent 40%);display:flex;align-items:center;gap:9px}
   .side-foot .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(140deg,var(--primary),var(--accent));flex:0 0 auto}
 
-  /* web top command/capture bar */
+  /* web top command/capture bar — LOCKED AT TOP */
   .topbar{display:none}
   .shape-web .topbar{display:flex;align-items:center;gap:14px;padding:14px clamp(24px,3vw,48px);
-    border-bottom:1px solid var(--border);position:relative;z-index:6;
-    background:color-mix(in oklab,var(--surface),transparent 22%);backdrop-filter:blur(14px);transition:background-color .8s,border-color .8s}
+    border-bottom:1px solid var(--border);position:sticky;top:0;z-index:8;
+    background:color-mix(in oklab,var(--surface),transparent 14%);backdrop-filter:blur(16px);transition:background-color .8s,border-color .8s}
   .topbar .webcap{flex:1;max-width:720px;display:flex;align-items:center;gap:12px;padding:9px 10px 9px 16px;border-radius:14px;
     background:color-mix(in oklab,var(--surface),transparent 0%);border:1px solid var(--border)}
   .topbar .webcap input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:15px}
   .topbar .webcap input::placeholder{color:var(--text-dim)}
-  .topbar .webcap .kbd{font-family:var(--ff-mono);font-size:11px;color:var(--text-dim);border:1px solid var(--border);border-radius:6px;padding:2px 6px}
   .topbar .webcap .send{width:36px;height:36px;border-radius:9px;background:var(--primary);color:var(--on-primary);display:grid;place-items:center}
   .topbar .webcap svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.9}
   .topbar .rightbits{margin-left:auto;display:flex;align-items:center;gap:10px;color:var(--text-dim);font-size:12.5px;font-family:var(--ff-mono)}
 
   /* example chips row */
-  .examples{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 0}
+  .examples{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 0;padding:0 16px}
   .shape-web .examples{padding:0 clamp(24px,3vw,48px)}
   .ex{font-size:12px;padding:6px 12px;border-radius:999px;border:1px solid var(--border);color:var(--text-dim);
     background:color-mix(in oklab,var(--surface),transparent 30%);transition:.16s;font-weight:500}
@@ -246,7 +243,6 @@
   .shape-web .sheet{border-radius:22px;max-height:82%}
   @keyframes rise{from{transform:translateY(24px);opacity:.4}to{transform:none;opacity:1}}
   .sheet-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:4px}
-  .sheet-head .grab{position:absolute}
   .sheet h2{font-family:var(--ff-display);font-weight:600;font-size:20px;margin:0}
   .sheet .sub{color:var(--text-dim);font-size:13px;margin:2px 0 16px}
   .sheet .utter{font-size:13.5px;font-style:italic;color:var(--text);background:color-mix(in oklab,var(--accent),transparent 88%);
@@ -274,20 +270,20 @@
   .btn.ghost{background:color-mix(in oklab,var(--surface-alt),transparent 20%);color:var(--text);border:1px solid var(--border)}
 
   /* toast */
-  .toast{position:absolute;left:50%;bottom:150px;transform:translateX(-50%) translateY(12px);z-index:30;
+  .toast{position:absolute;left:50%;bottom:100px;transform:translateX(-50%) translateY(12px);z-index:30;
     background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 18px;font-size:13.5px;font-weight:600;
-    box-shadow:0 20px 40px -16px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:10px}
+    box-shadow:0 20px 40px -16px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:.3s;display:flex;align-items:center;gap:10px;max-width:86%}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-  .toast .tk{width:20px;height:20px;border-radius:50%;background:var(--accent);display:grid;place-items:center}
+  .toast .tk{width:20px;height:20px;flex:0 0 auto;border-radius:50%;background:var(--accent);display:grid;place-items:center}
   .toast .tk svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2.6}
 
   .foot-hint{max-width:1240px;margin:14px auto 40px;padding:0 clamp(14px,3vw,28px);color:var(--studio-dim);font-size:12px;line-height:1.6}
   .foot-hint b{color:var(--studio-text)}
 
   @media (max-width:560px){
-    .studio-row{gap:10px 14px}
+    .studio-row{gap:9px 14px}
     .brandmark small{display:none}
-    .sunreadout{width:100%}
+    .sunreadout{width:100%;justify-content:flex-start}
   }
   @media (prefers-reduced-motion:reduce){
     *{transition-duration:.001s!important;animation-duration:.001s!important}
@@ -296,7 +292,7 @@
 
 <div class="studio">
   <div class="studio-row">
-    <div class="brandmark"><span class="dot"></span>Halcyon <small>design preview · working title</small></div>
+    <div class="brandmark"><span class="dot"></span>LifeLike <small>design preview · working name</small></div>
 
     <div class="ctl">
       <label>Shape</label>
@@ -306,25 +302,11 @@
       </div>
     </div>
 
-    <div class="ctl">
-      <label>Theme mode</label>
-      <div class="seg" id="modeSeg" role="group" aria-label="Theme mode">
-        <button data-mode="auto" aria-pressed="false">Auto</button>
-        <button data-mode="manual" aria-pressed="true">Scrub</button>
-        <button data-mode="night" aria-pressed="false">Lock night</button>
-      </div>
-    </div>
-
     <div class="ctl scrub">
-      <div class="rowline"><label>Time of day</label><span class="now" id="nowLabel">—</span></div>
-      <input type="range" id="timeRange" min="0" max="1439" value="1230" aria-label="Time of day">
+      <div class="rowline"><label>Preview the day <span class="preview-tag">preview only</span></label><span class="now" id="nowLabel">—</span></div>
+      <input type="range" id="timeRange" min="0" max="1439" value="900" aria-label="Preview time of day">
       <div class="rowline"><span class="phase" id="phaseLabel">—</span>
-        <span class="sunreadout"><span>☀ <b id="srLabel">—</b></span><span>☾ <b id="ssLabel">—</b></span></span></div>
-    </div>
-
-    <div class="ctl lat">
-      <div class="rowline"><label>Latitude</label><span class="now" id="latLabel">40°N</span></div>
-      <input type="range" id="latRange" min="-66" max="66" value="40" aria-label="Latitude">
+        <span class="sunreadout"><span>Sunrise <b id="srLabel">5:04 AM</b></span><span>Sunset <b id="ssLabel">9:05 PM</b></span></span></div>
     </div>
   </div>
 </div>
@@ -333,18 +315,27 @@
   <div class="device" id="device">
     <div class="sky-bg"></div>
     <canvas class="stars" id="stars"></canvas>
-    <div class="arc"><div class="horizon"></div><div class="celest" id="celest"></div></div>
+    <div class="arc"><div class="celest" id="celest"></div></div>
 
     <aside class="sidebar" id="sidebar"></aside>
+
+    <div class="capturedock">
+      <div class="capbar">
+        <span class="spark" aria-hidden="true"></span>
+        <input id="capInput" placeholder="Tell LifeLike what happened…" aria-label="Quick capture">
+        <button class="mic" title="Voice (on-device)" aria-label="Voice input"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+        <button class="send" id="capSend" aria-label="Capture"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
 
     <div class="appmain">
       <div class="topbar" id="topbar"></div>
       <header class="sky">
         <p class="greet-eyebrow" id="eyebrow">Wednesday · July 15</p>
-        <h1 class="greet" id="greet">Good evening.</h1>
+        <h1 class="greet" id="greet">Good afternoon.</h1>
         <p class="subline">
-          <span class="tclock" id="subclock">8:30 PM</span><span class="sep">·</span>
-          <span id="subphase">Golden hour is fading</span>
+          <span class="tclock" id="subclock">3:00 PM</span><span class="sep">·</span>
+          <span id="subphase">High, generous light</span>
         </p>
       </header>
 
@@ -359,15 +350,6 @@
 
     <nav class="tabbar" id="tabbar" aria-label="Sections"></nav>
 
-    <div class="capturedock">
-      <div class="capbar">
-        <span class="spark" aria-hidden="true"></span>
-        <input id="capInput" placeholder="Tell Halcyon what happened…" aria-label="Quick capture">
-        <button class="mic" title="Voice (on-device)" aria-label="Voice input"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
-        <button class="send" id="capSend" aria-label="Capture"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button>
-      </div>
-    </div>
-
     <div class="scrim" id="scrim">
       <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Review before saving"></div>
     </div>
@@ -376,7 +358,7 @@
 </div>
 
 <p class="foot-hint">
-  <b>What you're looking at.</b> A live design preview of the shared system — not the shipped app. Scrub <b>Time of day</b> to watch the theme interpolate through night → blue hour → sunrise → golden hour → day and back; sunrise/sunset are computed from <b>Latitude</b> (fixed to July 15). Switch <b>Shape</b> to compare the phone shell (bottom tabs, floating capture) with the web shell (sidebar, columns, command bar). Try an example chip or type in the capture bar to see the <b>parse → review → commit</b> flow — nothing is written until you confirm, and every field is editable or removable. On the web shape, Medical &amp; Substances show as <b>phone-only</b>, locked.
+  <b>What you're looking at.</b> A live design preview of the shared system — not the shipped app. In the real app the theme follows your device's clock automatically and sunrise/sunset are derived from your location; here they're set to your current times (5:04&nbsp;AM / 9:05&nbsp;PM), and the <b>Preview&nbsp;the&nbsp;day</b> slider is a preview-only way to scrub through night → blue hour → sunrise → golden hour → day and back. Switch <b>Shape</b> to compare the phone shell (capture locked at the top, bottom tabs) with the web shell (sidebar, columns, top command bar). Try an example chip or type in the capture bar to see the <b>parse → review → commit</b> flow — nothing is written until you confirm, and every field is editable or removable. On the web shape, Medical &amp; Substances show as <b>phone-only</b>, locked.
 </p>
 
 <script>
@@ -423,20 +405,9 @@
   };
   const TOK=['skyTop','skyBottom','surface','surfaceAlt','primary','accent','sun','border'];
 
-  /* ---------- sun times from latitude (fixed date Jul 15, N=196) ---------- */
-  const N=196, rad=Math.PI/180;
-  function sunTimes(latDeg){
-    const decl=23.44*Math.sin(rad*(360/365)*(N-81));
-    const cosH=-Math.tan(latDeg*rad)*Math.tan(decl*rad);
-    let polar=null;
-    if(cosH<=-1){polar='day';} else if(cosH>=1){polar='night';}
-    const H=Math.acos(Math.max(-1,Math.min(1,cosH)))/rad;
-    const sr=(12-H/15)*60, ss=(12+H/15)*60;
-    const maxAlt=90-Math.abs(latDeg-decl);
-    return{sr,ss,maxAlt,polar,decl};
-  }
+  /* ---------- sun times (auto-derived in app; fixed to your real times here) ---------- */
+  const st={sr:304, ss:1265, maxAlt:62, polar:null}; // sunrise 5:04 AM, sunset 9:05 PM
 
-  /* ---------- build timeline from sun times ---------- */
   function timeline(st){
     const {sr,ss}=st, noon=(sr+ss)/2, mid=(noon+720);
     const raw=[
@@ -459,26 +430,22 @@
     return out;
   }
 
-  /* ---------- altitude + phase ---------- */
   function altitude(min,st){
     const{sr,ss,maxAlt}=st;
-    if(st.polar==='day')return{alt:Math.max(3,maxAlt*.5),up:true,day:true};
-    if(st.polar==='night')return{alt:-12,up:true,day:false};
     if(min>=sr&&min<=ss){const f=(min-sr)/(ss-sr);return{alt:maxAlt*Math.sin(Math.PI*f),up:f<.5,day:true,f};}
     let nm=min<sr?min+1440:min;const nl=(sr+1440)-ss,f=(nm-ss)/nl;
-    return{alt:-Math.max(6,maxAlt*.35)*Math.sin(Math.PI*f),up:f>.5,day:false,f};
+    return{alt:-Math.max(6,maxAlt*.32)*Math.sin(Math.PI*f),up:f>.5,day:false,f};
   }
   function phaseName(min,st){
     const a=altitude(min,st);
-    const nearSR=Math.abs(min-st.sr)<9, nearSS=Math.abs(min-st.ss)<9;
-    if(nearSR)return['Sunrise','the day is beginning'];
-    if(nearSS)return['Sunset','the light is going'];
+    if(Math.abs(min-st.sr)<9)return['Sunrise','the day is beginning'];
+    if(Math.abs(min-st.ss)<9)return['Sunset','the light is going'];
     if(a.day){
-      if(a.alt<6)return a.up?['Golden hour','soft morning light']:['Golden hour','the light turns gold'];
+      if(a.alt<6)return['Golden hour',a.up?'soft morning light':'the light turns gold'];
       if(a.alt<14)return a.up?['Morning light','the day opens up']:['Late afternoon','the sun is dropping'];
       return['Daylight','high, generous light'];
     }else{
-      if(a.alt>-6)return a.up?['Blue hour','first light is close']:['Blue hour','dusk settling in'];
+      if(a.alt>-6)return['Blue hour',a.up?'first light is close':'dusk settling in'];
       if(a.alt>-12)return a.up?['Astronomical dawn','still dark, warming']:['Nautical dusk','the sky deepens'];
       return['Night','deep, quiet hours'];
     }
@@ -495,43 +462,34 @@
   /* ---------- apply theme ---------- */
   const root=document.documentElement, celest=document.getElementById('celest'),
         stars=document.getElementById('stars'), device=document.getElementById('device');
-  let curTok=null;
-  function apply(min,st){
+  function apply(min){
     const tk=sampleTok(timeline(st),min);
-    curTok=tk;
     for(const k of TOK)root.style.setProperty('--'+k.replace(/[A-Z]/g,m=>'-'+m.toLowerCase()),tk[k]);
     const tf=textFor(tk.surface);
     root.style.setProperty('--text',tf.text);
     root.style.setProperty('--text-dim',tf.dim);
     root.style.setProperty('--on-primary',onP(tk.primary));
     root.style.setProperty('--glow',tk.glow.toFixed(3));
-    // celestial position
     const a=altitude(min,st);
-    const w=device.clientWidth||400;
-    const prog=a.day?(a.f??.5):(a.f??.5);
-    const x=8+prog*84;
-    const yNorm=Math.max(-0.18,a.alt/Math.max(20,st.maxAlt));
-    const top=150-(yNorm*140);
-    celest.style.left=x+'%';
-    celest.style.top=top+'px';
-    celest.style.opacity=a.day?1:(a.alt>-9?1:.9);
-    // moon vs sun tint handled by --sun; make moon cooler already in palette
+    const prog=(a.f??.5);
+    celest.style.left=(8+prog*84)+'%';
+    celest.style.top=(180-Math.max(-0.18,a.alt/Math.max(20,st.maxAlt))*150)+'px';
+    celest.style.opacity=a.day?1:(a.alt>-9?.95:.85);
     document.getElementById('subclock').textContent=fmt(min);
     const[ph,phsub]=phaseName(min,st);
     document.getElementById('phaseLabel').textContent=ph;
     document.getElementById('subphase').textContent=capitalize(phsub);
-    const[gr,]=greetFor(min,st);
-    document.getElementById('greet').innerHTML=gr.replace(/(morning|afternoon|evening)/i,'<span class="accentword">$1</span>');
+    document.getElementById('greet').innerHTML=greetFor(min,st)[0].replace(/(morning|afternoon|evening)/i,'<span class="accentword">$1</span>');
     document.getElementById('nowLabel').textContent=fmt(min);
+    const tc=document.getElementById('topclock'); if(tc)tc.textContent=fmt(min);
   }
 
   function drawStars(){
     const c=stars,ctx=c.getContext('2d');
-    const w=c.width=device.clientWidth,h=c.height=200;
+    const w=c.width=device.clientWidth,h=c.height=device.clientHeight;
     ctx.clearRect(0,0,w,h);
-    const seed=[...Array(46)].map((_,i)=>[(i*89%w),(i*53%160),(i%5)*.5+.4]);
     ctx.fillStyle='#fff';
-    for(const[x,y,r] of seed){ctx.globalAlpha=r*.6;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();}
+    for(let i=0;i<52;i++){const x=(i*97+13)%w,y=(i*61+7)%Math.min(230,h),r=(i%5)*.5+.4;ctx.globalAlpha=r*.55;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();}
     ctx.globalAlpha=1;
   }
 
@@ -539,20 +497,13 @@
   const capitalize=s=>s.charAt(0).toUpperCase()+s.slice(1);
 
   /* ---------- state ---------- */
-  let mode='manual', minute=1230, lat=40, st=sunTimes(lat);
-  const timeRange=document.getElementById('timeRange'), latRange=document.getElementById('latRange');
-
-  function refreshSun(){
-    st=sunTimes(lat);
-    document.getElementById('srLabel').textContent=st.polar==='day'?'up all day':st.polar==='night'?'—':fmt(st.sr);
-    document.getElementById('ssLabel').textContent=st.polar==='day'?'—':st.polar==='night'?'—':fmt(st.ss);
-    document.getElementById('latLabel').textContent=Math.abs(lat)+'°'+(lat<0?'S':'N');
-  }
+  let minute=900;
+  const timeRange=document.getElementById('timeRange');
 
   let tweenId=null;
   function setMinute(target,animate){
     target=((target%1440)+1440)%1440;
-    if(reduce||!animate){minute=target;apply(minute,st);timeRange.value=Math.round(minute);return;}
+    if(reduce||!animate){minute=target;apply(minute);timeRange.value=Math.round(minute);return;}
     cancelAnimationFrame(tweenId);
     let from=minute, delta=target-from;
     if(Math.abs(delta)>720)delta-=Math.sign(delta)*1440;
@@ -560,31 +511,16 @@
     (function step(now){
       const p=Math.min(1,(now-t0)/dur), e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
       minute=((from+delta*e)%1440+1440)%1440;
-      apply(minute,st);timeRange.value=Math.round(minute);
+      apply(minute);timeRange.value=Math.round(minute);
       if(p<1)tweenId=requestAnimationFrame(step);
     })(t0);
   }
-
-  timeRange.addEventListener('input',e=>{if(mode!=='manual')setMode('manual');minute=+e.target.value;apply(minute,st);});
-  latRange.addEventListener('input',e=>{lat=+e.target.value;refreshSun();apply(minute,st);});
-
-  /* mode + shape segmented controls */
-  function setMode(m){
-    mode=m;
-    document.querySelectorAll('#modeSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===m));
-    if(m==='night'){setMinute(((( ( (st.ss+95)+ ((( (st.sr+st.ss)/2)+720) ))/2)) )%1440||60,true);setMinute(((st.sr+st.ss)/2+720)%1440,true);}
-    if(m==='auto'){tickAuto();}
-    if(autoTimer){clearInterval(autoTimer);autoTimer=null;}
-    if(m==='auto'){autoTimer=setInterval(tickAuto,4000);}
-  }
-  let autoTimer=null;
-  function tickAuto(){const d=new Date();setMinute(d.getHours()*60+d.getMinutes(),true);}
-  document.getElementById('modeSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setMode(b.dataset.mode);});
+  timeRange.addEventListener('input',e=>{minute=+e.target.value;apply(minute);});
 
   function setShape(s){
     document.getElementById('stage').className='shape-'+s;
     document.querySelectorAll('#shapeSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.shape===s));
-    requestAnimationFrame(()=>{drawStars();apply(minute,st);renderNav();renderContent();});
+    requestAnimationFrame(()=>{drawStars();apply(minute);renderNav();renderContent();});
   }
   document.getElementById('shapeSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setShape(b.dataset.shape);});
 
@@ -605,7 +541,6 @@
     run:'<circle cx="13" cy="5" r="2"/><path d="M5 20l4-5 3 2 2-5M12 12l4-1 3 3"/>',
     pen:'<path d="M4 20l4-1 10-10-3-3L5 16z"/>',
     leaf:'<path d="M5 20C4 12 9 5 20 4c1 9-4 15-12 15a5 5 0 0 1-3-1z"/><path d="M9 16c3-3 6-5 9-6"/>',
-    heart:'<path d="M20 8.5c0 4-8 9.5-8 9.5S4 12.5 4 8.5A3.5 3.5 0 0 1 11 7a3.5 3.5 0 0 1 9 1.5z"/>',
     plus:'<path d="M12 5v14M5 12h14"/>',
     x:'<path d="M6 6l12 12M18 6L6 18"/>',
   };
@@ -618,25 +553,21 @@
     ['ideas','Ideas',false],['goals','Goals',false],
   ];
   function renderNav(){
-    // phone tabs (first 4 + more)
     const tabs=[['today','Today'],['routine','Routine'],['health','Health'],['journal','Journals'],['ideas','More']];
     document.getElementById('tabbar').innerHTML=tabs.map((t,i)=>
       `<button aria-current="${i===0}">${svg(I[t[0]])}<span>${t[1]}</span></button>`).join('');
-    // sidebar
     document.getElementById('sidebar').innerHTML=
-      `<div class="side-brand"><span class="dot"></span>Halcyon</div>`+
+      `<div class="side-brand"><span class="dot"></span>LifeLike</div>`+
       NAV.map((n,i)=>`<button class="navitem" aria-current="${i===0}">${svg(I[n[0]])}<span>${n[1]}</span>${n[2]?`<span class="lockmini">${svg(I.lock)}</span>`:''}</button>`).join('')+
       `<div class="side-foot"><span class="av"></span><div>This device<br><span style="opacity:.7">iPhone · synced</span></div></div>`;
-    // web top command/capture bar
     document.getElementById('topbar').innerHTML=
       `<div class="webcap"><span class="spark" style="width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 36% 34%,var(--sun),var(--primary) 72%)"></span>
-        <input id="capInputWeb" placeholder="Tell Halcyon what happened, or search everything…" aria-label="Quick capture">
-        <span class="kbd">⌘K</span>
+        <input id="capInputWeb" placeholder="Tell LifeLike what happened, or search everything…" aria-label="Quick capture">
         <button class="send" id="capSendWeb" aria-label="Capture">${svg(I.plus)}</button></div>
        <div class="rightbits"><span id="topclock">—</span></div>`;
     const cw=document.getElementById('capInputWeb'), sw=document.getElementById('capSendWeb');
-    if(cw){cw.addEventListener('keydown',e=>{if(e.key==='Enter')submitCapture(cw.value);});}
-    if(sw){sw.addEventListener('click',()=>submitCapture(document.getElementById('capInputWeb').value));}
+    if(cw)cw.addEventListener('keydown',e=>{if(e.key==='Enter')submitCapture(cw.value);});
+    if(sw)sw.addEventListener('click',()=>submitCapture(document.getElementById('capInputWeb').value));
     const tc=document.getElementById('topclock'); if(tc)tc.textContent=fmt(minute);
   }
 
@@ -666,8 +597,8 @@
       <div class="card">
         <span class="eyebrow">Outstanding</span><h3 style="margin-top:4px">Still to do</h3>
         <ul class="list">
-          ${[['Evening medication','9:00 PM'],['Wind-down routine','before bed'],['Sleep journal','on waking']].map((o,i)=>
-            `<li><span class="tick" role="checkbox" aria-checked="false" tabindex="0" data-tick>${svg(I.plus).replace('plus','')}<svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-11"/></svg></span>
+          ${[['Evening medication','9:00 PM'],['Wind-down routine','before bed'],['Sleep journal','on waking']].map(o=>
+            `<li><span class="tick" role="checkbox" aria-checked="false" tabindex="0" data-tick><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-11"/></svg></span>
               <div class="li-body"><div class="t">${o[0]}</div><div class="m">${o[1]}</div></div></li>`).join('')}
         </ul>
       </div>`;
@@ -695,16 +626,14 @@
       </div>
       <div class="card locknote">
         <span class="lk">${svg(I.lock)}</span>
-        <div><b>Medical &amp; Substances</b><p>Phone-only. These sections stay on your phone and never sync to the browser — open Halcyon on your phone to view them.</p></div>
+        <div><b>Medical &amp; Substances</b><p>Phone-only. These sections stay on your phone and never sync to the browser — open LifeLike on your phone to view them.</p></div>
       </div>`;
 
     const isWeb=document.getElementById('stage').classList.contains('shape-web');
-    if(isWeb){
-      document.getElementById('content').innerHTML=
-        `<div class="colmain">${glance}${next}${outstanding}${recent}</div><div class="colrail">${rail}</div>`;
-    }else{
-      document.getElementById('content').innerHTML=glance+outstanding+next+recent;
-    }
+    document.getElementById('content').innerHTML= isWeb
+      ? `<div class="colmain">${glance}${next}${outstanding}${recent}</div><div class="colrail">${rail}</div>`
+      : glance+outstanding+next+recent;
+
     document.querySelectorAll('[data-tick]').forEach(t=>{
       const toggle=()=>{const v=t.getAttribute('aria-checked')==='true';t.setAttribute('aria-checked',!v);
         t.parentElement.querySelector('.li-body').setAttribute('data-done',!v);
@@ -715,16 +644,15 @@
   }
 
   /* ---------- capture parser (mock; real app uses Claude tool-use) ---------- */
+  const wordNum={one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,once:1,twice:2};
+  function toTime(h,m,ap,t){h=+h;if(ap==='pm'&&h<12)h+=12;else if(ap==='am'&&h===12)h=0;else if(!ap&&h<12&&/night|evening|smoked|bed|pm/.test(t))h+=12;return fmt((h%24)*60+(m?+m:0));}
   function parse(text){
     const t=text.toLowerCase(), out=[];
-    const timeMatch=/(?:around |about |~|at )?(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/g;
-    // sleep
     if(/slept|sleep|hours|woke|dream|nightmare|rest/.test(t)){
       const hrs=(t.match(/(\d+(?:\.\d+)?)\s*(?:hours|hrs|h\b)/)||t.match(/slept (?:about |around |~)?(\w+)/))||[];
-      const wordNum={one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10};
       let dur=hrs[1]?(wordNum[hrs[1]]||hrs[1]):'';
       const wake=(t.match(/woke (?:up )?(\w+)/)||[])[1];
-      const wakeN=wake?(wordNum[wake]??(wake==='twice'?2:wake==='once'?1:wake)):'';
+      const wakeN=wake?(wordNum[wake]??wake):'';
       const f=[];
       if(dur)f.push(['Duration',dur+' h']);
       if(wakeN!=='')f.push(['Awakenings',String(wakeN)]);
@@ -733,30 +661,23 @@
       f.push(['Felt on waking','—']);
       out.push({sec:'Sleep journal',ico:'moon',sub:'reflective entry',fields:f});
     }
-    // medication
     if(/meds|medication|took|pill|prazosin|concerta|mirtazapine|pregabalin|methadone/.test(t)){
-      const when=(t.match(/(?:meds|medication|them|took)[^.]*?(?:around |about |at |~)(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/)||[]);
-      let time=when[1]?fmt((+when[1]%12)*60+(when[2]?+when[2]:0)+((when[3]==='pm'||(!when[3]&&+when[1]<12&&+when[1]>=6))?720:0)):'—';
-      out.push({sec:'Medication log',ico:'pill',sub:'adherence',fields:[['What','Evening medication'],['Time',time],['Taken','yes']]});
+      const w=(t.match(/(?:meds|medication|them|took)[^.]*?(?:around |about |at |~)(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/)||[]);
+      out.push({sec:'Medication log',ico:'pill',sub:'adherence',fields:[['What','Evening medication'],['Time',w[1]?toTime(w[1],w[2],w[3],t):'—'],['Taken','yes']]});
     }
-    // cannabis (neutral)
     if(/smoked|weed|cannabis|joint|vape|bowl/.test(t)){
-      const when=(t.match(/(?:smoked|weed|cannabis)[^.]*?(?:around |about |at |~)(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/)||[]);
-      let time=when[1]?fmt((+when[1]%12)*60+(when[2]?+when[2]:0)+((when[3]==='pm'||(!when[3]&&+when[1]<12))?720:0)):'—';
-      out.push({sec:'Cannabis log',ico:'leaf',sub:'data point · neutral',fields:[['Time',time],['Method','—'],['Amount','—'],['Context','evening']]});
+      const w=(t.match(/(?:smoked|weed|cannabis)[^.]*?(?:around |about |at |~)(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/)||[]);
+      out.push({sec:'Cannabis log',ico:'leaf',sub:'data point · neutral',fields:[['Time',w[1]?toTime(w[1],w[2],w[3],t):'—'],['Method','—'],['Amount','—'],['Context','evening']]});
     }
-    // exercise
     if(/walk|ran|run|jog|gym|workout|exercise|steps/.test(t)){
       const mins=(t.match(/(\d+)\s*(?:min|minute)/)||[])[1];
       out.push({sec:'Exercise',ico:'run',sub:'activity',fields:[['Type',/walk/.test(t)?'walk':/run|jog|ran/.test(t)?'run':'workout'],['Duration',(mins||'—')+(mins?' min':'')]]});
     }
-    // hydration
     if(/water|hydrat|litre|liter|\dl\b|ml/.test(t)){
       const l=(t.match(/(\d+(?:\.\d+)?)\s*(?:l|litre|liter)/)||[])[1];
       const ml=(t.match(/(\d+)\s*ml/)||[])[1];
       out.push({sec:'Hydration',ico:'drop',sub:'intake',fields:[['Amount',l?l+' L':ml?ml+' ml':'—']]});
     }
-    // mood / journal
     if(/anxious|anxiety|mood|felt|sad|happy|calm|stressed|journal/.test(t)){
       const mood=(t.match(/mood (?:about |around |of |is )?(\d+)/)||[])[1];
       const f=[];
@@ -775,11 +696,9 @@
     text=(text||'').trim();
     if(!text)return;
     proposals=parse(text).map(p=>({...p,excluded:false,fields:p.fields.map(f=>({label:f[0],value:f[1],removed:false}))}));
-    if(document.getElementById('capInput'))document.getElementById('capInput').value='';
-    if(document.getElementById('capInputWeb'))document.getElementById('capInputWeb').value='';
-    if(!proposals.length){
-      proposals=[{sec:'Ideas inbox',ico:'ideas',sub:'unfiled capture',excluded:false,fields:[{label:'Note',value:text,removed:false}]}];
-    }
+    const ci=document.getElementById('capInput'); if(ci)ci.value='';
+    const cw=document.getElementById('capInputWeb'); if(cw)cw.value='';
+    if(!proposals.length)proposals=[{sec:'Ideas inbox',ico:'ideas',sub:'unfiled capture',excluded:false,fields:[{label:'Note',value:text,removed:false}]}];
     renderSheet(text);
     scrim.classList.add('open');
   }
@@ -787,7 +706,7 @@
     const n=proposals.filter(p=>!p.excluded).length;
     sheet.innerHTML=`
       <div class="sheet-head"><div style="flex:1"><h2>Review before saving</h2>
-      <p class="sub">Halcyon read this into ${proposals.length} section${proposals.length>1?'s':''}. Nothing is saved yet — edit, remove a field, or drop a whole card.</p></div>
+      <p class="sub">LifeLike read this into ${proposals.length} section${proposals.length>1?'s':''}. Nothing is saved yet — edit, remove a field, or drop a whole card.</p></div>
       <button class="rm" id="closeSheet" aria-label="Cancel" style="width:32px;height:32px">${svg(I.x)}</button></div>
       <p class="utter">“${utter}”</p>
       ${proposals.map((p,pi)=>`
@@ -824,8 +743,7 @@
       logged.unshift([icoFor[p.sec]||'pen',p.sec,detail+' · just now']);
     });
     logged=logged.slice(0,5);
-    close();
-    renderContent();
+    close();renderContent();
     toast('Saved to '+saved.map(p=>p.sec).join(', '));
   }
   scrim.addEventListener('click',e=>{if(e.target===scrim)close();});
@@ -834,24 +752,22 @@
   let toastT=null;
   function toast(msg){document.getElementById('toastMsg').textContent=msg;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>toastEl.classList.remove('show'),2600);}
 
-  /* wire capture inputs */
   document.getElementById('capSend').addEventListener('click',()=>submitCapture(document.getElementById('capInput').value));
   document.getElementById('capInput').addEventListener('keydown',e=>{if(e.key==='Enter')submitCapture(e.target.value);});
   document.getElementById('examples').addEventListener('click',e=>{const b=e.target.closest('.ex');if(b)submitCapture(b.dataset.ex);});
-  document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();const el=document.getElementById('capInputWeb')||document.getElementById('capInput');el&&el.focus();}
-    if(e.key==='Escape')close();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
 
   /* ---------- init ---------- */
   const qp=new URLSearchParams(location.search);
-  if(qp.get('lat')!==null){lat=+qp.get('lat');latRange.value=lat;}
-  if(qp.get('t')!==null){minute=+qp.get('t');timeRange.value=minute;}
-  refreshSun();
+  const now=new Date();
+  minute = qp.get('t')!==null ? +qp.get('t') : now.getHours()*60+now.getMinutes();
+  timeRange.value=Math.round(minute);
   renderNav();
   renderContent();
   setShape(qp.get('shape')==='web'?'web':'phone');
   drawStars();
-  apply(minute,st);
+  apply(minute);
   if(qp.get('demo')==='review')submitCapture('slept about five hours, woke up twice, weird dreams, took my meds around eight, smoked around ten');
-  window.addEventListener('resize',()=>{drawStars();apply(minute,st);});
+  window.addEventListener('resize',()=>{drawStars();apply(minute);});
 })();
 </script>

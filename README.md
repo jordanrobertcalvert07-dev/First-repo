@@ -1,10 +1,10 @@
-# Halcyon
+# LifeLike
 
 A private, single-user **personal life tracker** that breathes with the sun — one
 codebase for phone (iOS + Android) and web, with end-to-end-encrypted sync so the
 server only ever holds ciphertext.
 
-> **Working title.** "Halcyon" is a placeholder; rename freely.
+> **Name.** "LifeLike" is the current working name.
 
 This repository is intentionally **safe to make public**: no personal data lives in
 source. Everything personal is seeded on-device into the encrypted local database or

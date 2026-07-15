@@ -1,6 +1,6 @@
 # Stack & architecture
 
-Decisions approved in Phase 0. This is the source of truth for how Halcyon is built;
+Decisions approved in Phase 0. This is the source of truth for how LifeLike is built;
 update it when a decision changes.
 
 ## The core tradeoff
@@ -24,10 +24,13 @@ sensitive sections are phone-only (below).
 One Expo / React Native codebase targets iOS, Android, and Web (shipped as an
 installable PWA). Layouts are **deliberately divergent**, not stretched:
 
-- **Phone / narrow:** one column, bottom-tab navigation, quick-capture always within
-  thumb reach.
-- **Web / wide:** left sidebar, multi-column, command-bar capture, keyboard shortcuts,
-  wide charts.
+- **Phone / narrow:** one column, bottom-tab navigation, and the AI capture bar locked
+  to the top (always reachable; content scrolls under it).
+- **Web / wide:** left sidebar, multi-column, top command-bar capture, keyboard
+  shortcuts, wide charts.
+
+The theme follows the sun on the device's clock automatically — there is **no in-app
+theme switcher**, and sunrise/sunset are auto-derived from location (no manual latitude).
 
 The **design system is shared** (tokens, type scale, sun logic, color interpolation as
 plain data/logic); **component implementations are per-shape**.
