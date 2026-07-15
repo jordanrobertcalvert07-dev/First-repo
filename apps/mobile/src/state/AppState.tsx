@@ -1,5 +1,16 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { DEFAULT_COORDS, type Coords, type CaptureProposal } from '@lifelike/core';
+import { type Coords, type CaptureProposal } from '@lifelike/core';
+
+/**
+ * A sensible starting location before `expo-location` provides the real one:
+ * derive an approximate longitude from the device's timezone so the sun-driven
+ * theme roughly agrees with the wall clock (night looks like night) even before
+ * the user grants location. Latitude defaults to a temperate 40°.
+ */
+function initialCoords(): Coords {
+  const lon = Math.max(-180, Math.min(180, -(new Date().getTimezoneOffset() / 60) * 15));
+  return { lat: 40, lon };
+}
 
 /** A committed entry as shown in "Today's river". The real store (Evolu-backed,
  * encrypted) lands in Phase 7; this in-memory version keeps the skeleton alive. */
@@ -41,7 +52,7 @@ const uid = () => `l${Date.now()}_${seq++}`;
 
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [lockNight, setLockNight] = useState(false);
-  const [coords, setCoords] = useState<Coords>(DEFAULT_COORDS);
+  const [coords, setCoords] = useState<Coords>(initialCoords);
   const [recent, setRecent] = useState<LogItem[]>(SEED);
   const [doneCount] = useState(4);
   const totalCount = 7;
