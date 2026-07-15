@@ -19,8 +19,7 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "single",
-      "favicon": null
+      "output": "single"
     },
     "plugins": [
       "expo-font",

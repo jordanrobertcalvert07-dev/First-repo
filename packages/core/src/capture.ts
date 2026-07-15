@@ -9,7 +9,7 @@
  * any request. (See docs/STACK.md.)
  */
 
-import type { LogKind } from './schema.js';
+import type { LogKind } from './schema';
 
 export interface CaptureField {
   key: string;

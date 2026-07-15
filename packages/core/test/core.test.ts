@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   mix, luminance, computeTheme, deriveText, getSunMoment, classifyPhase,
   parseUtterance, HeuristicCaptureEngine, SleepEntry,
-} from '../src/index.js';
+} from '../src/index';
 
 const NYC = { lat: 40.71, lon: -74.01 };
 

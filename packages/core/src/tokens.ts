@@ -6,7 +6,7 @@
  * two shapes" promise lives here.
  */
 
-import type { Hex } from './color.js';
+import type { Hex } from './color';
 
 /* ----------------------------------------------------------------------------
  * Typography — Fraunces (display) + IBM Plex Sans (body/data), both SIL OFL.

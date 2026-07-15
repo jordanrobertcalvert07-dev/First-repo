@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   spark: { width: 24, height: 24, borderRadius: 12 },
-  input: { flex: 1, fontSize: 15, paddingVertical: 6 },
+  input: { flex: 1, minWidth: 0, fontSize: 15, paddingVertical: 6 },
   mic: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center' },
   send: { width: 38, height: 38, alignItems: 'center', justifyContent: 'center' },
 });

@@ -67,11 +67,11 @@ export function AppShell() {
           </View>
         </View>
       ) : (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, overflow: 'hidden' }}>
           <View style={{ paddingTop: insets.top + 10, paddingHorizontal: 14, paddingBottom: 8 }}>
             <CaptureBar variant="phone" onSubmit={capture} />
           </View>
-          <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}>{screen}</ScrollView>
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}>{screen}</ScrollView>
           <TabBar current={section} onSelect={setSection} bottomInset={insets.bottom} />
         </View>
       )}

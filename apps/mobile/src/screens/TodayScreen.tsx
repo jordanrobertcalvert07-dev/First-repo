@@ -30,7 +30,7 @@ function LogRow({ icon, title, detail, last }: { icon: string; title: string; de
       <View style={[styles.rowIco, { backgroundColor: colors.surfaceAlt }]}>
         <Icon name={icon} size={16} color={colors.accent} />
       </View>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, minWidth: 0 }}>
         <Type token="body">{title}</Type>
         <Type token="mono" dim>{detail}</Type>
       </View>
@@ -49,7 +49,7 @@ export function TodayScreen({ wide, onExample }: { wide: boolean; onExample: (te
     <Card>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 18 }}>
         <ProgressRing value={doneCount / totalCount} done={doneCount} total={totalCount} />
-        <View style={{ flex: 1, gap: 10 }}>
+        <View style={{ flex: 1, minWidth: 0, gap: 10 }}>
           <Type token="eyebrow" dim uppercase>{phaseTitle}</Type>
           <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
             <Chip label={`${recent.length + 3} logged`} />

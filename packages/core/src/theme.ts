@@ -4,9 +4,9 @@
  * surface. This is the heart of "the app breathes with the sun."
  */
 
-import { mix, luminance, smoothstep, type Hex } from './color.js';
-import { skyPalettes, ink, type SkyPalette, type SkyStop } from './tokens.js';
-import { getSunMoment, type Coords, type SunMoment, type SunPhase } from './sun.js';
+import { mix, luminance, smoothstep, type Hex } from './color';
+import { skyPalettes, ink, type SkyPalette, type SkyStop } from './tokens';
+import { getSunMoment, type Coords, type SunMoment, type SunPhase } from './sun';
 
 export interface ThemeColors {
   skyTop: Hex;
