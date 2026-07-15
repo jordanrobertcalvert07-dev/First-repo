@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "LifeLike",
+    "slug": "lifelike",
+    "scheme": "lifelike",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#16131d"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "android": {
+      "package": "app.lifelike",
+      "adaptiveIcon": {
+        "backgroundColor": "#16131d"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": null
+    },
+    "plugins": [
+      "expo-font",
+      "expo-local-authentication",
+      "expo-location"
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}

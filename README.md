@@ -17,7 +17,7 @@ Phase 0 complete — stack approved. Phase 1 (skeleton) in progress.
 | Phase | Scope | State |
 |------:|-------|-------|
 | 0 | Stack proposal + approval | ✅ done |
-| 1 | Design system + sun engine + navigation shells + **Today/Home** + **AI capture bar** + local encrypted storage + biometric unlock | 🚧 design preview shipped, awaiting feel sign-off |
+| 1 | Design system + sun engine + navigation shells + **Today/Home** + **AI capture bar** + local encrypted storage + biometric unlock | 🚧 core built & tested; Expo app scaffolded (`apps/mobile`); storage/biometric wiring next |
 | 2 | Capture wiring + Today + Daily routine | ⬜ |
 | 3 | Health hub + Medical (double-locked) + Biometrics | ⬜ |
 | 4 | Substance sections | ⬜ |
@@ -25,6 +25,18 @@ Phase 0 complete — stack approved. Phase 1 (skeleton) in progress.
 | 6 | Contacts, Ideas, Goals | ⬜ |
 | 7 | E2EE sync + device list + conflict-merge + recovery | ⬜ |
 | 8 | Insights, global search, timeline, export/import, a11y polish | ⬜ |
+
+## Layout
+
+```
+packages/core   UI-agnostic brain — tokens, sun/theme engine, schema, capture (tested)
+apps/mobile     Expo / React Native app — Android + Web (PWA), consumes core
+design/         design/preview.html — standalone design-system reference
+docs/           STACK.md (architecture) · DESIGN.md (design system)
+```
+
+Run: `npm install` then `npm run web` (see [`apps/mobile/README.md`](apps/mobile/README.md)).
+Verify the core: `npm run core:check && npm run core:test`.
 
 ## The design preview
 

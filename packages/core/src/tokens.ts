@@ -34,7 +34,7 @@ export const font = {
 } as const;
 
 /** A deliberate type scale (px) with matching line heights. Stay on the scale. */
-export const type = {
+export const typeScale = {
   display: { size: 40, line: 44, family: font.families.displaySemiBold, tracking: -0.5 },
   h1: { size: 28, line: 34, family: font.families.displaySemiBold, tracking: -0.3 },
   h2: { size: 22, line: 28, family: font.families.displayMedium, tracking: -0.2 },
@@ -46,7 +46,7 @@ export const type = {
   eyebrow: { size: 11, line: 14, family: font.families.bodySemiBold, tracking: 1.6 },
   mono: { size: 12, line: 16, family: font.families.mono, tracking: 0 },
 } as const;
-export type TypeToken = keyof typeof type;
+export type TypeToken = keyof typeof typeScale;
 
 /** 4px base spacing scale. */
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32, xxxl: 48 } as const;
