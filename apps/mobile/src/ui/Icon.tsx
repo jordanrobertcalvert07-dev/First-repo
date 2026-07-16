@@ -7,6 +7,8 @@ const GLYPH: Record<string, React.ComponentProps<typeof MaterialCommunityIcons>[
   routine: 'checkbox-marked-circle-outline',
   health: 'heart-pulse',
   substances: 'flask-outline',
+  substance: 'flask-outline',
+  settings: 'cog-outline',
   journals: 'notebook-outline',
   contacts: 'account-multiple-outline',
   ideas: 'lightbulb-outline',

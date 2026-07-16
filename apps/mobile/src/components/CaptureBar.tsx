@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
-import { View, TextInput, Pressable, StyleSheet } from 'react-native';
+import { View, TextInput, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
 import { Icon } from '../ui/Icon';
 
 interface Props {
   variant: 'phone' | 'web';
   onSubmit: (text: string) => void;
+  busy?: boolean;
 }
 
 /**
  * The AI capture bar — locked to the top on both shapes. Typing here and submitting
  * opens the review sheet; nothing is written until the user confirms.
  */
-export function CaptureBar({ variant, onSubmit }: Props) {
+export function CaptureBar({ variant, onSubmit, busy }: Props) {
   const { colors, font, radius } = useTheme();
   const [text, setText] = useState('');
 
   const submit = () => {
+    if (busy) return;
     const trimmed = text.trim();
     if (!trimmed) return;
     onSubmit(trimmed);
@@ -53,9 +55,10 @@ export function CaptureBar({ variant, onSubmit }: Props) {
       <Pressable
         accessibilityLabel="Capture"
         onPress={submit}
-        style={[styles.send, { backgroundColor: colors.primary, borderRadius: isWeb ? radius.xs : 999 }]}
+        style={[styles.send, { backgroundColor: colors.primary, borderRadius: isWeb ? radius.xs : 999, opacity: busy ? 0.7 : 1 }]}
       >
-        <Icon name={isWeb ? 'plus' : 'send'} size={19} color={colors.onPrimary} />
+        {busy ? <ActivityIndicator size="small" color={colors.onPrimary} />
+              : <Icon name={isWeb ? 'plus' : 'send'} size={19} color={colors.onPrimary} />}
       </Pressable>
     </View>
   );
