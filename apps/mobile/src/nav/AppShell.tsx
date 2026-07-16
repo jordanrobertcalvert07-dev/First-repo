@@ -64,8 +64,8 @@ export function AppShell() {
     }
   };
 
-  const onSave = (kept: CaptureProposal[]) => {
-    if (kept.length) { commit(kept); flash(`Saved to ${kept.map((p) => p.section).join(', ')}`); }
+  const onSave = async (kept: CaptureProposal[]) => {
+    if (kept.length) { await commit(kept); flash(`Saved to ${kept.map((p) => p.section).join(', ')}`); }
     setPending(null);
   };
 

@@ -2,9 +2,20 @@ import React from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
 import { useAppState } from '../state/AppState';
+import type { PersistedEntry } from '../storage/records';
+import { formatRelativeTime } from '../util/relativeTime';
 import { Type } from '../ui/Type';
 import { Icon } from '../ui/Icon';
 import { Card } from '../ui/Card';
+
+function describeEntry(entry: PersistedEntry): string {
+  const detail = entry.fields
+    .filter((f) => f.value && f.value !== '')
+    .slice(0, 2)
+    .map((f) => f.value)
+    .join(' · ');
+  return `${detail || 'logged'} · ${formatRelativeTime(entry.createdAt)}`;
+}
 
 const EXAMPLES = [
   'slept about five hours, woke up twice, weird dreams, took my meds around eight',
@@ -60,7 +71,7 @@ export function TodayScreen({ wide, onExample }: { wide: boolean; onExample: (te
         </View>
       ) : (
         recent.map((l, i) => (
-          <LogRow key={l.id} icon={l.icon} title={l.section} detail={l.detail} last={i === recent.length - 1} />
+          <LogRow key={l.id} icon={l.icon} title={l.section} detail={describeEntry(l)} last={i === recent.length - 1} />
         ))
       )}
     </Card>

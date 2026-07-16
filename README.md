@@ -17,9 +17,10 @@ Phase 0 complete — stack approved. Phase 1 (skeleton) in progress.
 | Phase | Scope | State |
 |------:|-------|-------|
 | 0 | Stack proposal + approval | ✅ done |
-| 1 | Design system + sun engine + navigation shells + **Today/Home** + **AI capture bar** + local encrypted storage + biometric unlock | 🚧 core built & tested; Expo app scaffolded (`apps/mobile`); storage/biometric wiring next |
-| 2 | Capture wiring + Today + Daily routine | ⬜ |
-| 3 | Health hub + Medical (double-locked) + Biometrics | ⬜ |
+| 1 | Design system + sun engine + navigation shells + **Today/Home** | ✅ done, verified end-to-end |
+| 2 | AI capture (Anthropic) + Settings | ✅ done |
+| 3 | Local encrypted storage (per-record AES-GCM, passphrase/keychain-gated) | ✅ done, verified end-to-end (setup → save → reload → unlock, wrong-passphrase rejection) |
+| 3b | Health hub + Medical (double-locked) + Biometric re-lock + SQLCipher/op-sqlite | ⬜ |
 | 4 | Substance sections | ⬜ |
 | 5 | Journals + cross-referencing | ⬜ |
 | 6 | Contacts, Ideas, Goals | ⬜ |

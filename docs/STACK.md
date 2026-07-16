@@ -47,15 +47,35 @@ toward a two-UI split if web polish ever demands it.
 
 ## 2. Encryption at rest
 
-**Phone.** SQLCipher via **op-sqlite** — AES-256 whole-database-file encryption. A
-random 256-bit DB key is generated on-device and stored in Keychain (Secure
-Enclave-backed) / Android Keystore, gated by biometrics.
+**Target architecture** (below) is SQLCipher/op-sqlite on phone and SQLite-WASM on web,
+both superseded by Evolu once sync lands (Phase 7). **What's actually implemented today**
+(Phase 3, `apps/mobile/src/storage/`) is an interim but genuinely-encrypted per-record
+store built to the same security shape, verified end-to-end (setup → capture → save →
+reload → unlock, and a wrong-passphrase rejection test) in this repo's history:
 
-**Web.** SQLite-WASM in **OPFS** with a WebCrypto (AES-GCM) encrypted layer — same
-SQLite schema and queries as phone, a different vault. The wrapping key is unlocked by a
-**WebAuthn passkey using the PRF extension** where available (same Face ID / fingerprint
-on supported devices; key material never leaves the authenticator boundary), falling
-back to an **Argon2id passphrase**. The key lives in memory only and is wiped on
+- Each record is **AES-256-GCM** encrypted individually (`@noble/ciphers`, pure JS — no
+  native module, so it runs identically in Expo Go and the browser) before being
+  written to storage (`@react-native-async-storage/async-storage`, which is
+  `localStorage`-backed on web and native storage on the phone).
+- **Phone:** the data key is generated once and held directly in
+  expo-secure-store (Keychain / Android Keystore backed).
+- **Web:** the data key is wrapped with a key derived from a user passphrase
+  (**PBKDF2-SHA256**, 150k iterations — a pragmatic stand-in for the target Argon2id +
+  WebAuthn/PRF, tracked as a hardening item) via a first-run "Protect your data" /
+  returning-user "Welcome back" gate. A wrong passphrase is rejected by AES-GCM's
+  authentication tag, not a separate check — verified: it fails closed.
+- **Not yet implemented:** the phone biometric re-lock, and the database-file-level
+  encryption (SQLCipher/Evolu) that replaces this per-record scheme. See phasing below.
+
+**Target — Phone.** SQLCipher via **op-sqlite** — AES-256 whole-database-file
+encryption. A random 256-bit DB key is generated on-device and stored in Keychain
+(Secure Enclave-backed) / Android Keystore, gated by biometrics.
+
+**Target — Web.** SQLite-WASM in **OPFS** with a WebCrypto (AES-GCM) encrypted layer —
+same SQLite schema and queries as phone, a different vault. The wrapping key is unlocked
+by a **WebAuthn passkey using the PRF extension** where available (same Face ID /
+fingerprint on supported devices; key material never leaves the authenticator boundary),
+falling back to an **Argon2id passphrase**. The key lives in memory only and is wiped on
 lock/timeout.
 
 - **What web encryption protects:** data at rest if someone copies browser storage

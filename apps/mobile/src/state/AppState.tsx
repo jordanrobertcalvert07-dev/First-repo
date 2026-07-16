@@ -1,16 +1,8 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { type Coords, type CaptureProposal } from '@lifelike/core';
 import { getSecret, setSecret, deleteSecret, KEY_ANTHROPIC } from '../secure/secureStore';
-
-/** A committed entry as shown in "Today's river". The real store (Evolu-backed,
- * encrypted) lands in Phase 7; this in-memory version keeps the skeleton alive. */
-export interface LogItem {
-  id: string;
-  icon: string;
-  section: string;
-  detail: string;
-  at: number;
-}
+import { isWebVault, getOrCreateNativeDek, webHasVault, webSetupVault, webUnlockVault } from '../storage/vault';
+import { listRecords, saveProposals, type PersistedEntry } from '../storage/records';
 
 export interface Settings {
   /** "Lock to night" — the one manual theme control, lives in Settings. */
@@ -21,14 +13,21 @@ export interface Settings {
   apiKey: string | null;
 }
 
+/** Vault lifecycle. Phone skips straight to 'unlocked' (OS-keychain-held key);
+ * web needs a one-time passphrase setup, then unlock on every fresh load. */
+export type VaultStatus = 'loading' | 'needs-setup' | 'locked' | 'unlocked';
+
 interface AppState {
   settings: Settings;
   setLockNight: (v: boolean) => void;
   setCoords: (c: Coords) => void;
   setApiKey: (v: string | null) => void;
-  recent: LogItem[];
-  /** Commit reviewed proposals into the store (after the user confirms the diff). */
-  commit: (proposals: CaptureProposal[]) => string[];
+  vaultStatus: VaultStatus;
+  setupVault: (passphrase: string) => Promise<void>;
+  unlockVault: (passphrase: string) => Promise<boolean>;
+  recent: PersistedEntry[];
+  /** Commit reviewed proposals into the encrypted store (after the user confirms the diff). */
+  commit: (proposals: CaptureProposal[]) => Promise<string[]>;
 }
 
 /**
@@ -44,20 +43,56 @@ function initialCoords(): Coords {
 
 const Ctx = createContext<AppState | null>(null);
 
-let seq = 0;
-const uid = () => `l${Date.now()}_${seq++}`;
-
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [lockNight, setLockNight] = useState(false);
   const [coords, setCoords] = useState<Coords>(initialCoords);
   const [apiKey, setApiKeyState] = useState<string | null>(null);
-  const [recent, setRecent] = useState<LogItem[]>([]);
+  const [recent, setRecent] = useState<PersistedEntry[]>([]);
+  const [vaultStatus, setVaultStatus] = useState<VaultStatus>('loading');
+  const [dek, setDek] = useState<Uint8Array | null>(null);
 
   // Load the stored API key once on mount.
   useEffect(() => {
     let alive = true;
     getSecret(KEY_ANTHROPIC).then((k) => { if (alive && k) setApiKeyState(k); });
     return () => { alive = false; };
+  }, []);
+
+  // Establish the vault: phone auto-unlocks from the OS keychain; web needs a
+  // passphrase, either set up now (first run) or unlocked (returning).
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      if (isWebVault) {
+        const has = await webHasVault();
+        if (alive) setVaultStatus(has ? 'locked' : 'needs-setup');
+      } else {
+        const key = await getOrCreateNativeDek();
+        if (alive) { setDek(key); setVaultStatus('unlocked'); }
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  // Once unlocked, load whatever's already persisted.
+  useEffect(() => {
+    if (vaultStatus === 'unlocked' && dek) {
+      listRecords(dek).then(setRecent);
+    }
+  }, [vaultStatus, dek]);
+
+  const setupVault = useCallback(async (passphrase: string) => {
+    const key = await webSetupVault(passphrase);
+    setDek(key);
+    setVaultStatus('unlocked');
+  }, []);
+
+  const unlockVault = useCallback(async (passphrase: string): Promise<boolean> => {
+    const key = await webUnlockVault(passphrase);
+    if (!key) return false;
+    setDek(key);
+    setVaultStatus('unlocked');
+    return true;
   }, []);
 
   const setApiKey = useCallback((v: string | null) => {
@@ -67,24 +102,21 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     else void deleteSecret(KEY_ANTHROPIC);
   }, []);
 
-  const commit = useCallback((proposals: CaptureProposal[]): string[] => {
-    const items: LogItem[] = proposals.map((p) => {
-      const detail =
-        p.fields.filter((f) => f.value && f.value !== '').slice(0, 2).map((f) => f.value).join(' · ')
-        || 'logged';
-      return { id: uid(), icon: p.icon, section: p.section, detail: `${detail} · just now`, at: Date.now() };
-    });
-    setRecent((prev) => [...items, ...prev].slice(0, 20));
+  const commit = useCallback(async (proposals: CaptureProposal[]): Promise<string[]> => {
+    if (!dek) return [];
+    const created = await saveProposals(dek, proposals);
+    setRecent((prev) => [...created, ...prev].slice(0, 200));
     return proposals.map((p) => p.section);
-  }, []);
+  }, [dek]);
 
   const value = useMemo<AppState>(
     () => ({
       settings: { lockNight, coords, apiKey },
       setLockNight, setCoords, setApiKey,
+      vaultStatus, setupVault, unlockVault,
       recent, commit,
     }),
-    [lockNight, coords, apiKey, recent, setApiKey, commit],
+    [lockNight, coords, apiKey, setApiKey, vaultStatus, setupVault, unlockVault, recent, commit],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
