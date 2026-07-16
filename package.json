@@ -1,0 +1,19 @@
+{
+  "name": "lifelike",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A private, single-user personal life tracker that breathes with the sun.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "core:check": "npm --workspace @lifelike/core run check",
+    "core:test": "npm --workspace @lifelike/core run test",
+    "mobile": "npm --workspace @lifelike/mobile run start",
+    "web": "npm --workspace @lifelike/mobile run web",
+    "ios": "npm --workspace @lifelike/mobile run ios",
+    "android": "npm --workspace @lifelike/mobile run android"
+  },
+  "license": "MIT"
+}

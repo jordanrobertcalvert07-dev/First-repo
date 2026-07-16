@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+.pnp.*
+.yarn/*
+
+# Expo / React Native
+.expo/
+dist/
+web-build/
+*.orig.*
+.expo-shared/
+
+# Native
+ios/Pods/
+ios/build/
+android/.gradle/
+android/app/build/
+*.keystore
+!debug.keystore
+
+# Env & secrets — never commit keys or personal data
+.env
+.env.*
+!.env.example
+*.local
+
+# Local encrypted databases / seeds (personal data stays off the repo)
+*.db
+*.sqlite
+*.sqlite3
+seed.local.*
+
+# Build / cache / logs
+build/
+coverage/
+*.log
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
