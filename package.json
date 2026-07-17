@@ -10,6 +10,8 @@
   "scripts": {
     "core:check": "npm --workspace @lifelike/core run check",
     "core:test": "npm --workspace @lifelike/core run test",
+    "block-collector:check": "npm --workspace @lifelike/block-collector run check",
+    "block-collector:test": "npm --workspace @lifelike/block-collector run test",
     "mobile": "npm --workspace @lifelike/mobile run start",
     "web": "npm --workspace @lifelike/mobile run web",
     "ios": "npm --workspace @lifelike/mobile run ios",
