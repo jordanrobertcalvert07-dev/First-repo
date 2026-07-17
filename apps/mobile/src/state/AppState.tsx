@@ -15,6 +15,10 @@ import {
   listActiveContacts, createContact, updateContact, archiveContact, markContacted,
   type Contact, type NewContact,
 } from '../storage/contacts';
+import {
+  listIdeas, captureIdea, setIdeaStatus, removeIdea,
+  type Idea, type IdeaStatus,
+} from '../storage/ideas';
 
 export interface Settings {
   /** "Lock to night" — the one manual theme control, lives in Settings. */
@@ -54,6 +58,10 @@ interface AppState {
   editContact: (contact: Contact, changes: NewContact) => Promise<void>;
   deleteContact: (contact: Contact) => Promise<void>;
   markContactedNow: (id: string) => Promise<void>;
+  ideas: Idea[];
+  addIdea: (text: string) => Promise<void>;
+  setIdeaTriage: (idea: Idea, status: IdeaStatus) => Promise<void>;
+  removeIdeaPermanently: (id: string) => Promise<void>;
 }
 
 /**
@@ -80,6 +88,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [routineCompletions, setRoutineCompletions] = useState<RoutineCompletion[]>([]);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [ideas, setIdeas] = useState<Idea[]>([]);
 
   // Load the stored API key once on mount.
   useEffect(() => {
@@ -112,6 +121,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       listCompletions(dek).then(setRoutineCompletions);
       listJournalEntries(dek).then(setJournalEntries);
       listActiveContacts(dek).then(setContacts);
+      listIdeas(dek).then(setIdeas);
     }
   }, [vaultStatus, dek]);
 
@@ -209,6 +219,23 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setContacts((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
   }, [dek, contacts]);
 
+  const addIdea = useCallback(async (text: string) => {
+    if (!dek) return;
+    const idea = await captureIdea(dek, text);
+    setIdeas((prev) => [idea, ...prev]);
+  }, [dek]);
+
+  const setIdeaTriage = useCallback(async (idea: Idea, status: IdeaStatus) => {
+    if (!dek) return;
+    const updated = await setIdeaStatus(dek, idea, status);
+    setIdeas((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
+  }, [dek]);
+
+  const removeIdeaPermanently = useCallback(async (id: string) => {
+    await removeIdea(id);
+    setIdeas((prev) => prev.filter((i) => i.id !== id));
+  }, []);
+
   const value = useMemo<AppState>(
     () => ({
       settings: { lockNight, coords, apiKey },
@@ -218,12 +245,14 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       routineActions, routineCompletions, addRoutineAction, toggleRoutineToday, removeRoutineAction,
       journalEntries, addJournalEntry, editJournalEntry, deleteJournalEntry,
       contacts, addContact, editContact, deleteContact, markContactedNow,
+      ideas, addIdea, setIdeaTriage, removeIdeaPermanently,
     }),
     [
       lockNight, coords, apiKey, setApiKey, vaultStatus, setupVault, unlockVault, recent, commit,
       routineActions, routineCompletions, addRoutineAction, toggleRoutineToday, removeRoutineAction,
       journalEntries, addJournalEntry, editJournalEntry, deleteJournalEntry,
       contacts, addContact, editContact, deleteContact, markContactedNow,
+      ideas, addIdea, setIdeaTriage, removeIdeaPermanently,
     ],
   );
 

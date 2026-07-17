@@ -14,6 +14,7 @@ import { TodayScreen } from '../screens/TodayScreen';
 import { RoutineScreen } from '../screens/RoutineScreen';
 import { JournalsScreen } from '../screens/JournalsScreen';
 import { ContactsScreen } from '../screens/ContactsScreen';
+import { IdeasScreen } from '../screens/IdeasScreen';
 import { SettingsScreen } from '../screens/Settings';
 import { PlaceholderScreen, LockedScreen } from '../screens/Simple';
 import { SECTIONS, PHONE_TABS, type Section } from './sections';
@@ -79,6 +80,7 @@ export function AppShell() {
     active.key === 'routine' ? <RoutineScreen wide={wide} /> :
     active.key === 'journals' ? <JournalsScreen wide={wide} /> :
     active.key === 'contacts' ? <ContactsScreen wide={wide} /> :
+    active.key === 'ideas' ? <IdeasScreen wide={wide} /> :
     active.phoneOnly && (wide || Platform.OS === 'web') ? <LockedScreen title={active.label} /> :
     <PlaceholderScreen title={active.label} />;
 
