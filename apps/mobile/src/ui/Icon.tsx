@@ -28,6 +28,8 @@ const GLYPH: Record<string, React.ComponentProps<typeof MaterialCommunityIcons>[
   send: 'arrow-right',
   close: 'close',
   check: 'check',
+  recovery: 'compass-outline',
+  search: 'magnify',
 };
 
 export function Icon({ name, size = 20, color }: { name: string; size?: number; color: string }) {

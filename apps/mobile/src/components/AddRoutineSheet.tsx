@@ -44,6 +44,7 @@ export function AddRoutineSheet({ onCancel, onSave }: Props) {
   return (
     <Modal visible transparent animationType="slide" onRequestClose={onCancel}>
       <Pressable style={styles.scrim} onPress={onCancel} />
+      <View style={styles.sheetWrap} pointerEvents="box-none">
       <View style={[styles.sheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <View style={styles.head}>
           <Type token="h2" style={{ flex: 1 }}>New routine</Type>
@@ -134,14 +135,16 @@ export function AddRoutineSheet({ onCancel, onSave }: Props) {
           </Pressable>
         </View>
       </View>
+      </View>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.5)' },
+  sheetWrap: { position: 'absolute', left: 0, right: 0, bottom: 0, alignItems: 'center' },
   sheet: {
-    position: 'absolute', left: 0, right: 0, bottom: 0, alignSelf: 'center', width: '100%', maxWidth: 520,
+    width: '100%', maxWidth: 520,
     borderTopLeftRadius: 26, borderTopRightRadius: 26, borderWidth: 1, padding: 20,
   },
   head: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 6 },

@@ -7,6 +7,10 @@ import {
   listActiveActions, listCompletions, createAction, toggleCompletion, archiveAction,
   toDayKey, type RoutineAction, type RoutineCompletion, type NewAction,
 } from '../storage/routines';
+import {
+  listJournalEntries, createJournalEntry, updateJournalEntry, removeJournalEntry,
+  type JournalEntry, type NewJournalEntry,
+} from '../storage/journals';
 
 export interface Settings {
   /** "Lock to night" — the one manual theme control, lives in Settings. */
@@ -37,6 +41,10 @@ interface AppState {
   addRoutineAction: (input: NewAction) => Promise<void>;
   toggleRoutineToday: (actionId: string) => Promise<void>;
   removeRoutineAction: (action: RoutineAction) => Promise<void>;
+  journalEntries: JournalEntry[];
+  addJournalEntry: (input: NewJournalEntry) => Promise<void>;
+  editJournalEntry: (entry: JournalEntry, changes: NewJournalEntry) => Promise<void>;
+  deleteJournalEntry: (id: string) => Promise<void>;
 }
 
 /**
@@ -61,6 +69,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [dek, setDek] = useState<Uint8Array | null>(null);
   const [routineActions, setRoutineActions] = useState<RoutineAction[]>([]);
   const [routineCompletions, setRoutineCompletions] = useState<RoutineCompletion[]>([]);
+  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
 
   // Load the stored API key once on mount.
   useEffect(() => {
@@ -91,6 +100,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       listRecords(dek).then(setRecent);
       listActiveActions(dek).then(setRoutineActions);
       listCompletions(dek).then(setRoutineCompletions);
+      listJournalEntries(dek).then(setJournalEntries);
     }
   }, [vaultStatus, dek]);
 
@@ -145,6 +155,23 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setRoutineActions((prev) => prev.filter((a) => a.id !== action.id));
   }, [dek]);
 
+  const addJournalEntry = useCallback(async (input: NewJournalEntry) => {
+    if (!dek) return;
+    const entry = await createJournalEntry(dek, input);
+    setJournalEntries((prev) => [entry, ...prev]);
+  }, [dek]);
+
+  const editJournalEntry = useCallback(async (entry: JournalEntry, changes: NewJournalEntry) => {
+    if (!dek) return;
+    const updated = await updateJournalEntry(dek, entry, changes);
+    setJournalEntries((prev) => prev.map((e) => (e.id === updated.id ? updated : e)));
+  }, [dek]);
+
+  const deleteJournalEntry = useCallback(async (id: string) => {
+    await removeJournalEntry(id);
+    setJournalEntries((prev) => prev.filter((e) => e.id !== id));
+  }, []);
+
   const value = useMemo<AppState>(
     () => ({
       settings: { lockNight, coords, apiKey },
@@ -152,10 +179,12 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       vaultStatus, setupVault, unlockVault,
       recent, commit,
       routineActions, routineCompletions, addRoutineAction, toggleRoutineToday, removeRoutineAction,
+      journalEntries, addJournalEntry, editJournalEntry, deleteJournalEntry,
     }),
     [
       lockNight, coords, apiKey, setApiKey, vaultStatus, setupVault, unlockVault, recent, commit,
       routineActions, routineCompletions, addRoutineAction, toggleRoutineToday, removeRoutineAction,
+      journalEntries, addJournalEntry, editJournalEntry, deleteJournalEntry,
     ],
   );
 
