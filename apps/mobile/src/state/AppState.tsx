@@ -19,6 +19,11 @@ import {
   listIdeas, captureIdea, setIdeaStatus, removeIdea,
   type Idea, type IdeaStatus,
 } from '../storage/ideas';
+import {
+  listGoals, createGoal, updateGoal, setGoalStatus, removeGoal,
+  addMilestone, toggleMilestone, removeMilestone,
+  type Goal, type NewGoal, type GoalStatus,
+} from '../storage/goals';
 
 export interface Settings {
   /** "Lock to night" — the one manual theme control, lives in Settings. */
@@ -62,6 +67,14 @@ interface AppState {
   addIdea: (text: string) => Promise<void>;
   setIdeaTriage: (idea: Idea, status: IdeaStatus) => Promise<void>;
   removeIdeaPermanently: (id: string) => Promise<void>;
+  goals: Goal[];
+  addGoal: (input: NewGoal) => Promise<void>;
+  editGoal: (goal: Goal, changes: NewGoal) => Promise<void>;
+  changeGoalStatus: (goal: Goal, status: GoalStatus) => Promise<void>;
+  deleteGoal: (id: string) => Promise<void>;
+  addGoalMilestone: (goal: Goal, title: string) => Promise<void>;
+  toggleGoalMilestone: (goal: Goal, milestoneId: string) => Promise<void>;
+  removeGoalMilestone: (goal: Goal, milestoneId: string) => Promise<void>;
 }
 
 /**
@@ -89,6 +102,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [goals, setGoals] = useState<Goal[]>([]);
 
   // Load the stored API key once on mount.
   useEffect(() => {
@@ -122,6 +136,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       listJournalEntries(dek).then(setJournalEntries);
       listActiveContacts(dek).then(setContacts);
       listIdeas(dek).then(setIdeas);
+      listGoals(dek).then(setGoals);
     }
   }, [vaultStatus, dek]);
 
@@ -236,6 +251,47 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setIdeas((prev) => prev.filter((i) => i.id !== id));
   }, []);
 
+  const addGoal = useCallback(async (input: NewGoal) => {
+    if (!dek) return;
+    const goal = await createGoal(dek, input);
+    setGoals((prev) => [goal, ...prev]);
+  }, [dek]);
+
+  const editGoal = useCallback(async (goal: Goal, changes: NewGoal) => {
+    if (!dek) return;
+    const updated = await updateGoal(dek, goal, changes);
+    setGoals((prev) => prev.map((g) => (g.id === updated.id ? updated : g)));
+  }, [dek]);
+
+  const changeGoalStatus = useCallback(async (goal: Goal, status: GoalStatus) => {
+    if (!dek) return;
+    const updated = await setGoalStatus(dek, goal, status);
+    setGoals((prev) => prev.map((g) => (g.id === updated.id ? updated : g)));
+  }, [dek]);
+
+  const deleteGoal = useCallback(async (id: string) => {
+    await removeGoal(id);
+    setGoals((prev) => prev.filter((g) => g.id !== id));
+  }, []);
+
+  const addGoalMilestone = useCallback(async (goal: Goal, title: string) => {
+    if (!dek) return;
+    const updated = await addMilestone(dek, goal, title);
+    setGoals((prev) => prev.map((g) => (g.id === updated.id ? updated : g)));
+  }, [dek]);
+
+  const toggleGoalMilestone = useCallback(async (goal: Goal, milestoneId: string) => {
+    if (!dek) return;
+    const updated = await toggleMilestone(dek, goal, milestoneId);
+    setGoals((prev) => prev.map((g) => (g.id === updated.id ? updated : g)));
+  }, [dek]);
+
+  const removeGoalMilestone = useCallback(async (goal: Goal, milestoneId: string) => {
+    if (!dek) return;
+    const updated = await removeMilestone(dek, goal, milestoneId);
+    setGoals((prev) => prev.map((g) => (g.id === updated.id ? updated : g)));
+  }, [dek]);
+
   const value = useMemo<AppState>(
     () => ({
       settings: { lockNight, coords, apiKey },
@@ -246,6 +302,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       journalEntries, addJournalEntry, editJournalEntry, deleteJournalEntry,
       contacts, addContact, editContact, deleteContact, markContactedNow,
       ideas, addIdea, setIdeaTriage, removeIdeaPermanently,
+      goals, addGoal, editGoal, changeGoalStatus, deleteGoal, addGoalMilestone, toggleGoalMilestone, removeGoalMilestone,
     }),
     [
       lockNight, coords, apiKey, setApiKey, vaultStatus, setupVault, unlockVault, recent, commit,
@@ -253,6 +310,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       journalEntries, addJournalEntry, editJournalEntry, deleteJournalEntry,
       contacts, addContact, editContact, deleteContact, markContactedNow,
       ideas, addIdea, setIdeaTriage, removeIdeaPermanently,
+      goals, addGoal, editGoal, changeGoalStatus, deleteGoal, addGoalMilestone, toggleGoalMilestone, removeGoalMilestone,
     ],
   );
 
