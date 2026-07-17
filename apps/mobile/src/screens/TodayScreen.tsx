@@ -4,9 +4,11 @@ import { useTheme } from '../theme/ThemeProvider';
 import { useAppState } from '../state/AppState';
 import type { PersistedEntry } from '../storage/records';
 import { formatRelativeTime } from '../util/relativeTime';
+import { isDueOn, isDoneOn, toDayKey } from '../storage/routines';
 import { Type } from '../ui/Type';
 import { Icon } from '../ui/Icon';
 import { Card } from '../ui/Card';
+import { ProgressRing } from '../ui/ProgressRing';
 
 function describeEntry(entry: PersistedEntry): string {
   const detail = entry.fields
@@ -38,23 +40,65 @@ function LogRow({ icon, title, detail, last }: { icon: string; title: string; de
   );
 }
 
-export function TodayScreen({ wide, onExample }: { wide: boolean; onExample: (text: string) => void }) {
+export function TodayScreen({
+  wide,
+  onExample,
+  onNavigate,
+}: {
+  wide: boolean;
+  onExample: (text: string) => void;
+  onNavigate: (route: string) => void;
+}) {
   const { colors, greeting, phaseSub } = useTheme();
-  const { recent } = useAppState();
+  const { recent, routineActions, routineCompletions, toggleRoutineToday } = useAppState();
   const now = new Date();
+  const dayKey = toDayKey(now);
   const clock = now.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
   const accentWord = greeting.match(/morning|afternoon|evening/i)?.[0];
 
+  const dueActions = routineActions.filter((a) => isDueOn(a, now));
+  const outstanding = dueActions.filter((a) => !isDoneOn(routineCompletions, a.id, dayKey));
+  const doneCount = dueActions.length - outstanding.length;
+
   const glance = (
     <Card>
-      <Type token="eyebrow" dim uppercase>Today, so far</Type>
-      <Type token="h3" style={{ marginTop: 4, marginBottom: 4 }}>
-        {recent.length === 0 ? 'Nothing logged yet' : `${recent.length} thing${recent.length === 1 ? '' : 's'} logged`}
-      </Type>
-      <Type token="caption" dim>
-        Tell LifeLike about your day using the bar above — say it however it comes out, and you'll get to
-        review everything before it's saved.
-      </Type>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+        <ProgressRing
+          value={dueActions.length ? doneCount / dueActions.length : 0}
+          done={doneCount}
+          total={dueActions.length}
+          size={84}
+        />
+        <View style={{ flex: 1, minWidth: 0 }}>
+          <Type token="eyebrow" dim uppercase>Today's routine</Type>
+          <Type token="h3" style={{ marginTop: 4 }}>
+            {dueActions.length === 0
+              ? 'Nothing due today'
+              : outstanding.length === 0
+                ? 'All done for today'
+                : `${outstanding.length} outstanding`}
+          </Type>
+          <Pressable onPress={() => onNavigate('routine')} style={{ marginTop: 6 }} hitSlop={6}>
+            <Type token="label" color={colors.primary}>View routine →</Type>
+          </Pressable>
+        </View>
+      </View>
+      {outstanding.length > 0 && (
+        <View style={{ marginTop: 14 }}>
+          {outstanding.map((a, i) => (
+            <Pressable
+              key={a.id}
+              onPress={() => toggleRoutineToday(a.id)}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: false }}
+              style={[styles.outRow, i !== outstanding.length - 1 && { borderBottomColor: colors.border, borderBottomWidth: StyleSheet.hairlineWidth }]}
+            >
+              <View style={[styles.check, { borderColor: colors.primary }]} />
+              <Type token="body" style={{ flex: 1 }}>{a.title}</Type>
+            </Pressable>
+          ))}
+        </View>
+      )}
     </Card>
   );
 
@@ -136,4 +180,6 @@ const styles = StyleSheet.create({
   rowIco: { width: 30, height: 30, borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
   ex: { borderWidth: 1, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6, maxWidth: '100%' },
   lk: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  outRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10 },
+  check: { width: 20, height: 20, borderRadius: 7, borderWidth: 1.5 },
 });

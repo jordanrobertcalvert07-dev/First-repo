@@ -3,6 +3,10 @@ import { type Coords, type CaptureProposal } from '@lifelike/core';
 import { getSecret, setSecret, deleteSecret, KEY_ANTHROPIC } from '../secure/secureStore';
 import { isWebVault, getOrCreateNativeDek, webHasVault, webSetupVault, webUnlockVault } from '../storage/vault';
 import { listRecords, saveProposals, type PersistedEntry } from '../storage/records';
+import {
+  listActiveActions, listCompletions, createAction, toggleCompletion, archiveAction,
+  toDayKey, type RoutineAction, type RoutineCompletion, type NewAction,
+} from '../storage/routines';
 
 export interface Settings {
   /** "Lock to night" — the one manual theme control, lives in Settings. */
@@ -28,6 +32,11 @@ interface AppState {
   recent: PersistedEntry[];
   /** Commit reviewed proposals into the encrypted store (after the user confirms the diff). */
   commit: (proposals: CaptureProposal[]) => Promise<string[]>;
+  routineActions: RoutineAction[];
+  routineCompletions: RoutineCompletion[];
+  addRoutineAction: (input: NewAction) => Promise<void>;
+  toggleRoutineToday: (actionId: string) => Promise<void>;
+  removeRoutineAction: (action: RoutineAction) => Promise<void>;
 }
 
 /**
@@ -50,6 +59,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [recent, setRecent] = useState<PersistedEntry[]>([]);
   const [vaultStatus, setVaultStatus] = useState<VaultStatus>('loading');
   const [dek, setDek] = useState<Uint8Array | null>(null);
+  const [routineActions, setRoutineActions] = useState<RoutineAction[]>([]);
+  const [routineCompletions, setRoutineCompletions] = useState<RoutineCompletion[]>([]);
 
   // Load the stored API key once on mount.
   useEffect(() => {
@@ -78,6 +89,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (vaultStatus === 'unlocked' && dek) {
       listRecords(dek).then(setRecent);
+      listActiveActions(dek).then(setRoutineActions);
+      listCompletions(dek).then(setRoutineCompletions);
     }
   }, [vaultStatus, dek]);
 
@@ -109,14 +122,41 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     return proposals.map((p) => p.section);
   }, [dek]);
 
+  const addRoutineAction = useCallback(async (input: NewAction) => {
+    if (!dek) return;
+    const action = await createAction(dek, input);
+    setRoutineActions((prev) => [...prev, action]);
+  }, [dek]);
+
+  const toggleRoutineToday = useCallback(async (actionId: string) => {
+    if (!dek) return;
+    const day = toDayKey(new Date());
+    const result = await toggleCompletion(dek, actionId, day, routineCompletions);
+    setRoutineCompletions((prev) =>
+      result
+        ? [...prev, result]
+        : prev.filter((c) => !(c.actionId === actionId && c.day === day)),
+    );
+  }, [dek, routineCompletions]);
+
+  const removeRoutineAction = useCallback(async (action: RoutineAction) => {
+    if (!dek) return;
+    await archiveAction(dek, action);
+    setRoutineActions((prev) => prev.filter((a) => a.id !== action.id));
+  }, [dek]);
+
   const value = useMemo<AppState>(
     () => ({
       settings: { lockNight, coords, apiKey },
       setLockNight, setCoords, setApiKey,
       vaultStatus, setupVault, unlockVault,
       recent, commit,
+      routineActions, routineCompletions, addRoutineAction, toggleRoutineToday, removeRoutineAction,
     }),
-    [lockNight, coords, apiKey, setApiKey, vaultStatus, setupVault, unlockVault, recent, commit],
+    [
+      lockNight, coords, apiKey, setApiKey, vaultStatus, setupVault, unlockVault, recent, commit,
+      routineActions, routineCompletions, addRoutineAction, toggleRoutineToday, removeRoutineAction,
+    ],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

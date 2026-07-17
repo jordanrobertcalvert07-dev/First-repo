@@ -11,6 +11,7 @@ import { Icon } from '../ui/Icon';
 import { CaptureBar } from '../components/CaptureBar';
 import { ReviewSheet } from '../components/ReviewSheet';
 import { TodayScreen } from '../screens/TodayScreen';
+import { RoutineScreen } from '../screens/RoutineScreen';
 import { SettingsScreen } from '../screens/Settings';
 import { PlaceholderScreen, LockedScreen } from '../screens/Simple';
 import { SECTIONS, PHONE_TABS, type Section } from './sections';
@@ -72,7 +73,8 @@ export function AppShell() {
   const active = SECTIONS.find((s) => s.key === route);
   const screen =
     route === 'settings' ? <SettingsScreen /> :
-    !active || active.key === 'today' ? <TodayScreen wide={wide} onExample={capture} /> :
+    !active || active.key === 'today' ? <TodayScreen wide={wide} onExample={capture} onNavigate={setRoute} /> :
+    active.key === 'routine' ? <RoutineScreen wide={wide} /> :
     active.phoneOnly && (wide || Platform.OS === 'web') ? <LockedScreen title={active.label} /> :
     <PlaceholderScreen title={active.label} />;
 
