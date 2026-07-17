@@ -11,6 +11,10 @@ import {
   listJournalEntries, createJournalEntry, updateJournalEntry, removeJournalEntry,
   type JournalEntry, type NewJournalEntry,
 } from '../storage/journals';
+import {
+  listActiveContacts, createContact, updateContact, archiveContact, markContacted,
+  type Contact, type NewContact,
+} from '../storage/contacts';
 
 export interface Settings {
   /** "Lock to night" — the one manual theme control, lives in Settings. */
@@ -45,6 +49,11 @@ interface AppState {
   addJournalEntry: (input: NewJournalEntry) => Promise<void>;
   editJournalEntry: (entry: JournalEntry, changes: NewJournalEntry) => Promise<void>;
   deleteJournalEntry: (id: string) => Promise<void>;
+  contacts: Contact[];
+  addContact: (input: NewContact) => Promise<void>;
+  editContact: (contact: Contact, changes: NewContact) => Promise<void>;
+  deleteContact: (contact: Contact) => Promise<void>;
+  markContactedNow: (id: string) => Promise<void>;
 }
 
 /**
@@ -70,6 +79,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [routineActions, setRoutineActions] = useState<RoutineAction[]>([]);
   const [routineCompletions, setRoutineCompletions] = useState<RoutineCompletion[]>([]);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
 
   // Load the stored API key once on mount.
   useEffect(() => {
@@ -101,6 +111,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       listActiveActions(dek).then(setRoutineActions);
       listCompletions(dek).then(setRoutineCompletions);
       listJournalEntries(dek).then(setJournalEntries);
+      listActiveContacts(dek).then(setContacts);
     }
   }, [vaultStatus, dek]);
 
@@ -172,6 +183,32 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setJournalEntries((prev) => prev.filter((e) => e.id !== id));
   }, []);
 
+  const addContact = useCallback(async (input: NewContact) => {
+    if (!dek) return;
+    const contact = await createContact(dek, input);
+    setContacts((prev) => [...prev, contact]);
+  }, [dek]);
+
+  const editContact = useCallback(async (contact: Contact, changes: NewContact) => {
+    if (!dek) return;
+    const updated = await updateContact(dek, contact, changes);
+    setContacts((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
+  }, [dek]);
+
+  const deleteContact = useCallback(async (contact: Contact) => {
+    if (!dek) return;
+    await archiveContact(dek, contact);
+    setContacts((prev) => prev.filter((c) => c.id !== contact.id));
+  }, [dek]);
+
+  const markContactedNow = useCallback(async (id: string) => {
+    if (!dek) return;
+    const target = contacts.find((c) => c.id === id);
+    if (!target) return;
+    const updated = await markContacted(dek, target);
+    setContacts((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
+  }, [dek, contacts]);
+
   const value = useMemo<AppState>(
     () => ({
       settings: { lockNight, coords, apiKey },
@@ -180,11 +217,13 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       recent, commit,
       routineActions, routineCompletions, addRoutineAction, toggleRoutineToday, removeRoutineAction,
       journalEntries, addJournalEntry, editJournalEntry, deleteJournalEntry,
+      contacts, addContact, editContact, deleteContact, markContactedNow,
     }),
     [
       lockNight, coords, apiKey, setApiKey, vaultStatus, setupVault, unlockVault, recent, commit,
       routineActions, routineCompletions, addRoutineAction, toggleRoutineToday, removeRoutineAction,
       journalEntries, addJournalEntry, editJournalEntry, deleteJournalEntry,
+      contacts, addContact, editContact, deleteContact, markContactedNow,
     ],
   );
 
