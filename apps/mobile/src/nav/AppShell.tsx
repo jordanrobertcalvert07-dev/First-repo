@@ -16,6 +16,8 @@ import { JournalsScreen } from '../screens/JournalsScreen';
 import { ContactsScreen } from '../screens/ContactsScreen';
 import { IdeasScreen } from '../screens/IdeasScreen';
 import { GoalsScreen } from '../screens/GoalsScreen';
+import { HealthScreen } from '../screens/HealthScreen';
+import { SubstancesScreen } from '../screens/SubstancesScreen';
 import { SettingsScreen } from '../screens/Settings';
 import { PlaceholderScreen, LockedScreen } from '../screens/Simple';
 import { SECTIONS, PHONE_TABS, type Section } from './sections';
@@ -84,6 +86,8 @@ export function AppShell() {
     active.key === 'ideas' ? <IdeasScreen wide={wide} /> :
     active.key === 'goals' ? <GoalsScreen wide={wide} /> :
     active.phoneOnly && (wide || Platform.OS === 'web') ? <LockedScreen title={active.label} /> :
+    active.key === 'health' ? <HealthScreen /> :
+    active.key === 'substances' ? <SubstancesScreen /> :
     <PlaceholderScreen title={active.label} />;
 
   return (

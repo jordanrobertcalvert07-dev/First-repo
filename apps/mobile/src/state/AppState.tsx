@@ -24,6 +24,19 @@ import {
   addMilestone, toggleMilestone, removeMilestone,
   type Goal, type NewGoal, type GoalStatus,
 } from '../storage/goals';
+import {
+  listActiveMedications, listDoses, createMedication, updateMedication, archiveMedication,
+  logDose, removeDose, getMedicalNotes, setMedicalNotes,
+  type Medication, type NewMedication, type MedicationDose,
+} from '../storage/medical';
+import {
+  listVitals, createVital, updateVital, removeVital,
+  type VitalEntry, type NewVitalEntry,
+} from '../storage/vitals';
+import {
+  listSubstanceUses, createSubstanceUse, updateSubstanceUse, removeSubstanceUse,
+  type SubstanceUseEntry, type NewSubstanceUse,
+} from '../storage/substances';
 
 export interface Settings {
   /** "Lock to night" — the one manual theme control, lives in Settings. */
@@ -75,6 +88,23 @@ interface AppState {
   addGoalMilestone: (goal: Goal, title: string) => Promise<void>;
   toggleGoalMilestone: (goal: Goal, milestoneId: string) => Promise<void>;
   removeGoalMilestone: (goal: Goal, milestoneId: string) => Promise<void>;
+  medications: Medication[];
+  medicationDoses: MedicationDose[];
+  medicalNotes: string;
+  addMedication: (input: NewMedication) => Promise<void>;
+  editMedication: (med: Medication, changes: NewMedication) => Promise<void>;
+  removeMedication: (med: Medication) => Promise<void>;
+  logMedicationDose: (medicationId: string) => Promise<void>;
+  removeMedicationDose: (id: string) => Promise<void>;
+  saveMedicalNotes: (text: string) => Promise<void>;
+  vitals: VitalEntry[];
+  addVital: (input: NewVitalEntry) => Promise<void>;
+  editVital: (entry: VitalEntry, changes: NewVitalEntry) => Promise<void>;
+  deleteVital: (id: string) => Promise<void>;
+  substanceUses: SubstanceUseEntry[];
+  addSubstanceUse: (input: NewSubstanceUse) => Promise<void>;
+  editSubstanceUse: (entry: SubstanceUseEntry, changes: NewSubstanceUse) => Promise<void>;
+  deleteSubstanceUse: (id: string) => Promise<void>;
 }
 
 /**
@@ -103,6 +133,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
+  const [medications, setMedications] = useState<Medication[]>([]);
+  const [medicationDoses, setMedicationDoses] = useState<MedicationDose[]>([]);
+  const [medicalNotes, setMedicalNotesState] = useState('');
+  const [vitals, setVitals] = useState<VitalEntry[]>([]);
+  const [substanceUses, setSubstanceUses] = useState<SubstanceUseEntry[]>([]);
 
   // Load the stored API key once on mount.
   useEffect(() => {
@@ -137,6 +172,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       listActiveContacts(dek).then(setContacts);
       listIdeas(dek).then(setIdeas);
       listGoals(dek).then(setGoals);
+      listActiveMedications(dek).then(setMedications);
+      listDoses(dek).then(setMedicationDoses);
+      getMedicalNotes(dek).then(setMedicalNotesState);
+      listVitals(dek).then(setVitals);
+      listSubstanceUses(dek).then(setSubstanceUses);
     }
   }, [vaultStatus, dek]);
 
@@ -292,6 +332,75 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setGoals((prev) => prev.map((g) => (g.id === updated.id ? updated : g)));
   }, [dek]);
 
+  const addMedication = useCallback(async (input: NewMedication) => {
+    if (!dek) return;
+    const med = await createMedication(dek, input);
+    setMedications((prev) => [...prev, med]);
+  }, [dek]);
+
+  const editMedication = useCallback(async (med: Medication, changes: NewMedication) => {
+    if (!dek) return;
+    const updated = await updateMedication(dek, med, changes);
+    setMedications((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
+  }, [dek]);
+
+  const removeMedicationAction = useCallback(async (med: Medication) => {
+    if (!dek) return;
+    await archiveMedication(dek, med);
+    setMedications((prev) => prev.filter((m) => m.id !== med.id));
+  }, [dek]);
+
+  const logMedicationDose = useCallback(async (medicationId: string) => {
+    if (!dek) return;
+    const dose = await logDose(dek, medicationId);
+    setMedicationDoses((prev) => [dose, ...prev]);
+  }, [dek]);
+
+  const removeMedicationDose = useCallback(async (id: string) => {
+    await removeDose(id);
+    setMedicationDoses((prev) => prev.filter((d) => d.id !== id));
+  }, []);
+
+  const saveMedicalNotes = useCallback(async (text: string) => {
+    if (!dek) return;
+    await setMedicalNotes(dek, text);
+    setMedicalNotesState(text);
+  }, [dek]);
+
+  const addVital = useCallback(async (input: NewVitalEntry) => {
+    if (!dek) return;
+    const entry = await createVital(dek, input);
+    setVitals((prev) => [entry, ...prev]);
+  }, [dek]);
+
+  const editVital = useCallback(async (entry: VitalEntry, changes: NewVitalEntry) => {
+    if (!dek) return;
+    const updated = await updateVital(dek, entry, changes);
+    setVitals((prev) => prev.map((v) => (v.id === updated.id ? updated : v)));
+  }, [dek]);
+
+  const deleteVital = useCallback(async (id: string) => {
+    await removeVital(id);
+    setVitals((prev) => prev.filter((v) => v.id !== id));
+  }, []);
+
+  const addSubstanceUse = useCallback(async (input: NewSubstanceUse) => {
+    if (!dek) return;
+    const entry = await createSubstanceUse(dek, input);
+    setSubstanceUses((prev) => [entry, ...prev]);
+  }, [dek]);
+
+  const editSubstanceUse = useCallback(async (entry: SubstanceUseEntry, changes: NewSubstanceUse) => {
+    if (!dek) return;
+    const updated = await updateSubstanceUse(dek, entry, changes);
+    setSubstanceUses((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
+  }, [dek]);
+
+  const deleteSubstanceUse = useCallback(async (id: string) => {
+    await removeSubstanceUse(id);
+    setSubstanceUses((prev) => prev.filter((u) => u.id !== id));
+  }, []);
+
   const value = useMemo<AppState>(
     () => ({
       settings: { lockNight, coords, apiKey },
@@ -303,6 +412,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       contacts, addContact, editContact, deleteContact, markContactedNow,
       ideas, addIdea, setIdeaTriage, removeIdeaPermanently,
       goals, addGoal, editGoal, changeGoalStatus, deleteGoal, addGoalMilestone, toggleGoalMilestone, removeGoalMilestone,
+      medications, medicationDoses, medicalNotes,
+      addMedication, editMedication, removeMedication: removeMedicationAction, logMedicationDose, removeMedicationDose,
+      saveMedicalNotes,
+      vitals, addVital, editVital, deleteVital,
+      substanceUses, addSubstanceUse, editSubstanceUse, deleteSubstanceUse,
     }),
     [
       lockNight, coords, apiKey, setApiKey, vaultStatus, setupVault, unlockVault, recent, commit,
@@ -311,6 +425,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       contacts, addContact, editContact, deleteContact, markContactedNow,
       ideas, addIdea, setIdeaTriage, removeIdeaPermanently,
       goals, addGoal, editGoal, changeGoalStatus, deleteGoal, addGoalMilestone, toggleGoalMilestone, removeGoalMilestone,
+      medications, medicationDoses, medicalNotes,
+      addMedication, editMedication, removeMedicationAction, logMedicationDose, removeMedicationDose,
+      saveMedicalNotes,
+      vitals, addVital, editVital, deleteVital,
+      substanceUses, addSubstanceUse, editSubstanceUse, deleteSubstanceUse,
     ],
   );
 
